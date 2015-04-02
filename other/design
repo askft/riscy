@@ -1,0 +1,145 @@
+--------------------------------------------------------------------------------
+IMPORTANT NOTES
+--------------------------------------------------------------------------------
+
+This file is in dire need of an update. I will do it when the code is better.
+
+Some notes:
+	- The data must come first in the program
+	- After the data comes the text segment i.e. the instructions
+	- The first line of the resulting binary file tells the interpreter on
+	  which line the instruction header lies.
+
+	- the first line of the resulting binary file tells the interpreter how
+	  many lines (after the header) are data
+	- the second line of the resulting binary file tells the interpreter how
+	  many lines (after the header) are instructions
+
+
+--------------------------------------------------------------------------------
+	The stack and the heap 
+--------------------------------------------------------------------------------
+
+Global variables, i.e. those declared after the .data directive, are stored
+on the heap, i.e. at memory addresses starting from 0 and growing upward.
+
+The stack pointer, sp, is a variable that keeps track of the top of the stack,
+i.e. the lowest address in a block (the stack grows downward).
+
+At start-up, the stack pointer has a value of 255 (MEMORY_SIZE - 1). To make
+room on the stack for more variables, use
+
+
+
+--------------------------------------------------------------------------------
+	Labels
+--------------------------------------------------------------------------------
+
+Labels, i.e. those declared such as "loop:", must be at the beginning of a line
+and end with a colon character (':').
+
+A label may not contain only digits.
+
+When the assembler first encounters a label, it will associate the label name
+with a an address, i.e. an integer that is stored on the heap.
+
+
+
+--------------------------------------------------------------------------------
+	Registers
+--------------------------------------------------------------------------------
+
+r0	-	The contents of this register is always 0.
+
+r1,	-	General purpose registers
+r2,	-	-
+r3,	-	-
+
+I have four more registers to assign meaning to, perhaps. Below are some
+considerations:
+
+sp	-	Stack pointer register.
+		Holds the value of the top of the stack.
+
+ir	-	Immediate register.
+		Used in immediate addressing instructions such as addi, subi.
+		(Expand!)
+
+fp	-	?
+
+
+
+--------------------------------------------------------------------------------
+	Instruction set
+--------------------------------------------------------------------------------
+
+In total, there are 8 instructions, represented by 3 bits each:
+
+opcode	name	format		example usage 1		example usage 2
+--------------------------------------------------------------------------------
+000	add	RRR		add	r1, r2, r3
+001	addi	RRI		addi	r1, r2, 20	addi r1, r2, label
+010	nand	RRR		nand	r1, r2, r3
+011	lui	RI		lui	r1, 30
+100	sw	RRI		sw	r1, r2, 0	sw r1, zero, label
+101	lw	RRI		lw	r1, r2, 0	lw r1, zero, label
+110	beq	RRI		beq	r1, r2, label
+111	jalr	RRI		jalr	r1, r2
+
+Format		...	  bits
+------------------------------
+RRR-type	opcode	: 3
+		reg A	: 3
+		reg B	: 3
+		0	: 4
+		reg C	: 3
+
+RRI-type	opcode	: 3
+		reg A	: 3
+		reg B	: 3
+		simm	: 7
+
+RI-type		opcode	: 3
+		reg A	: 3
+		usimm	: 10
+
+Pseudoinstructions (yet to be implemented):
+
+	nop			=	add zero, zero, zero
+	lli	reg, simm	=	addi reg, reg, simm
+	movi	
+
+...
+		
+
+
+Arithmetic instruction
+----------------------
+	There is only one "real" arithmetic instruction, but several
+	pseudoinstructions which will be converted to the "real" instruction.
+
+	The form for the add instruction is
+
+	add	r1, r2, r3
+
+	which takes the contents of r2 and r3, adds them, and stores them in r1.
+
+	Pseudoinstructions are:
+
+	addi	r1, r2, imm		= li ir
+
+
+
+((((( DEPRECATED
+Examples:
+
+An example of using the stack:
+
+	.data
+tmp:	.word	-5		# The value to subtract from the stack pointer
+
+	.text
+	lw	r1, tmp		# Load value of tmp (5) into r1
+	add	sp, sp, r1
+DEPRECATED )))))
+
