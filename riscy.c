@@ -64,6 +64,28 @@ void label_list_add_label(label_list_t* list, char* name, char* address)
 	list->labels[list->nbr_labels++] = label;
 }
 
+char* label_list_get_address(label_list_t* list, char* name)
+{
+	for (int i = 0; i < list->nbr_labels; ++i) {
+		if (streq(name, list->labels[i]->name)) {
+			return list->labels[i]->address;
+		}
+	}
+	printf("[!] %s: %s: Could not find label \"%s\".\n",
+		__FILE__, __func__, name);
+	return NULL;
+}
+
+bool label_list_contains(label_list_t* list, char* name)
+{
+	for (int i = 0; i < list->nbr_labels; ++i) {
+		if (streq(name, list->labels[i]->name)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void label_list_print(label_list_t* list)
 {
 	int i;

@@ -9,10 +9,12 @@ int main(int argc, char* argv[])
 	char*	output_filename	= argv[2];	/* Output of assembled code */
 	char*	tmp_filename1	= "tmp1.s";	/* Temporary buffer file 1 */
 	char*	tmp_filename2	= "tmp2.s";	/* Temporary buffer file 2 */
+	char*	tmp_filename3	= "tmp3.o";
 	FILE*	input		= NULL;	
 	FILE*	output		= NULL;		
 	FILE*	tmpfile1	= NULL;
 	FILE*	tmpfile2	= NULL;
+	FILE*	tmpfile3	= NULL;
 
 	label_list_t*	list;		/* Will be assigned to the return value
 					   of the parsed_labels function, to
@@ -36,29 +38,28 @@ int main(int argc, char* argv[])
 
 	/* Make the file easier to parse by removing all comments,
 	 * empty lines and whitespace */
-	printf("Cleaning up input file...\n");
-	printf("%s\n", input_filename);
+	printf("Start : file_cleanup\n");
 	file_cleanup(tmpfile1, input);
-	printf("Successfully cleaned up input file.\n");
+	printf("End   : file_cleanup\n\n");
 
 	/* First temporary file should now be read from instead of written to */
 	fclose(tmpfile1);
 	tmpfile1 = safer_fopen(tmp_filename1, "r");
 
 	/* Scan for labels and store their respective addresses */
-	printf("Parsing labels...\n");
 	list = label_list_init();
+	printf("Start : parse_labels\n");
 	parse_labels(tmpfile1, list);
-	printf("Successfully parsed labels.\n");
+	printf("End   : parse_labels\n\n");
 
 	/* Tedious to read from and write to the first temporary file at the
 	 * same time. Open a second temporary file to write to instead. */
 	tmpfile2 = safer_fopen(tmp_filename2, "w");
 
 	/* Replace all labels with their binary addressed */
-	printf("Replacing labels...\n");
+	printf("Start : replace_labels\n");
 	replace_labels(tmpfile2, tmpfile1, list);
-	printf("Successfully replaced labels.\n\n");
+	printf("End   : replace_labels\n\n");
 
 	/* Reopen tmpfile2 for reading, and open the user output file for
 	 * writing. */
@@ -67,15 +68,22 @@ int main(int argc, char* argv[])
 	output = safer_fopen(output_filename, "w");
 
 	/* Assemble the .fill directives to binary */
+	printf("Start : assemble_data.\n");
 	assemble_data(output, tmpfile2);
+	printf("End   : assemble_data.\n\n");
 
 	/* Close [output] for writing, repoen it for appending (the data). */
 	fclose(output);
 	output = safer_fopen(output_filename, "a");
 
 	/* Assemble the instructions to binary */
+	printf("Start : assemble_test.\n");
 	assemble_text(output, tmpfile2);
-	
+	printf("End   : assemble_text.\n\n");
+
+	/* Remove all empty lines */
+//	remove_empty_lines(
+
 	/* Done with the assembly. Close all files and free all memory. */
 	fclose(input);
 	fclose(tmpfile1);

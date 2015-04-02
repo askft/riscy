@@ -3,6 +3,8 @@
 #ifndef RISCY_H
 #define RISCY_H
 
+#include <stdbool.h>
+
 #define NBR_INSTRUCTIONS	(8)
 #define NBR_REGISTERS		(8)
 #define MEM_SIZE		(1024)
@@ -33,6 +35,9 @@ label_list_t*	label_list_init		();
 void		label_list_add_label	(	label_list_t*	list,
 						char*		name,
 						char*		address);
+
+char*		label_list_get_address	(label_list_t*, char* name);
+bool		label_list_contains	(label_list_t* list, char* name);
 void		label_list_print	(label_list_t* list);
 void		label_list_free		(label_list_t* list);
 

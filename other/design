@@ -9,11 +9,9 @@ Some notes:
 	- After the data comes the text segment i.e. the instructions
 	- The first line of the resulting binary file tells the interpreter on
 	  which line the instruction header lies.
+	- The instruction header contains the line number that comes after
+	  the last instruction
 
-	- the first line of the resulting binary file tells the interpreter how
-	  many lines (after the header) are data
-	- the second line of the resulting binary file tells the interpreter how
-	  many lines (after the header) are instructions
 
 
 --------------------------------------------------------------------------------
