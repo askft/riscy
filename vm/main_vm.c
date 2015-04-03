@@ -26,13 +26,10 @@ int main(int argc, char* argv[])
 	RiscyVM* vm = VM_init(progname);
 
 	while (VM_is_running(vm)) {
-		uint16_t instruction = fetch(vm);
-		decode(vm, instruction);
-		execute();
 
-		// Way cooler way to call the functions; need to change
-		// parameters though
-//		execute(vm, decode(vm, fetch(vm)));
+		VM_fetch(vm);
+		VM_decode(vm);
+		VM_execute(vm);
 
 //		memory_access();	// TODO: Remove this?
 //		write_back();		// TODO: Remove this?
