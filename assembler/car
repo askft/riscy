@@ -1,21 +1,23 @@
 clear && clear && \
 gcc -g main.c assembler.c riscy.c utility.c \
-	-Wall -Wextra -pedantic -std=c11 && \
+	-Wall -Wextra -pedantic -std=c11 \
+	-o tmp/a.out && \
 \
-./a.out test.s output && \
+./tmp/a.out sum.s sum && \
 \
-echo "------------------------ Start test.s:" && \
+echo "------------------------ Start [input]:" && \
 cat test.s && \
-echo "------------------------ End test.s" && \
+echo "------------------------ End [input]" && \
 echo "" && \
 echo "------------------------ Start tmp1.s:" && \
-cat tmp1.s && \
+cat tmp/tmp1.s && \
 echo "------------------------ End tmp1.s" && \
 echo "" && \
 echo "------------------------ Start tmp2.s:" && \
-cat tmp2.s && \
+cat tmp/tmp2.s && \
 echo "------------------------ End tmp2.s" && \
 echo "" && \
-echo "------------------------ Start output:" && \
+echo "------------------------ Start [output]:" && \
 cat output && \
-echo "------------------------ End output"
+echo "------------------------ End [outpu]t" && \
+rm -R tmp/*

@@ -33,6 +33,11 @@ char* dec_to_bin(char* bin, int dec, int nbr_bits)
 	return bin;
 }
 
+int bin_to_dec(char* bin)
+{
+	return (int) strtol(bin, NULL, 2);
+}
+
 bool is_binary(const char* str)
 {
 	unsigned long i;

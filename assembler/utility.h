@@ -9,6 +9,7 @@
 FILE*	safer_fopen			(char* filename, char* action);
 
 char*	dec_to_bin			(char* bin, int dec, int nbr_bits);
+int	bin_to_dec			(char* bin);
 bool	is_binary			(const char* str);
 
 void	remove_comments			(char* line);
