@@ -5,6 +5,7 @@ IMPORTANT NOTES
 This file is in dire need of an update. I will do it when the code is better.
 
 Some notes:
+
 	- The data must come first in the program
 	- After the data comes the text segment i.e. the instructions
 	- The first line of the resulting binary file tells the interpreter on
@@ -12,6 +13,10 @@ Some notes:
 	- The instruction header contains the line number that comes after
 	  the last instruction
 
+
+New notes from 04/04/2015:
+
+	- The registers can hold _signed_ 16-bit integers, i.e. [-32768, 32767].
 
 
 --------------------------------------------------------------------------------

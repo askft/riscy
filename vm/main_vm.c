@@ -5,25 +5,33 @@
 
 #include "vm.h"
 
-/* TODO(Alexander):
- * 	- Read the TODOs in the vm.c file.
- * 	- For instructions, create an instruction struct to represent them.
- * 	  This struct should contain opcode, reg_ and _simm (see vm.c: decode)
- * 	- The fetch, decode and execute instruction will probably need new
- * 	  parameters and return values (see above point).
+/* TODO(Alexander)
+ * 	- Look at all TODOs and XXXs in the vm.c file. They basically say:
+ * 		* Make the file shorter?
+ * 		* Does the program need to keep track of the instruction format?
  */
 
 int main(int argc, char* argv[])
 {
-	if (argc != 2) {
+	if (argc < 2) {
 		printf("Usage: cpu <input_filename>\n");
 		exit(EXIT_FAILURE);
 	}
 
 	char*	thisname	= argv[0];	/* Name of this C program */
 	char*	progname	= argv[1];	/* Name of binary code file */
+	bool	step		= false;
 
-	RiscyVM* vm = VM_init(progname);
+	if (argv[2] != NULL) {
+		if (strcmp(argv[2], "--step") == 0) {
+			step = true;
+		} else {
+			printf("[!] Usage: cpu <input_filename> [options]\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	RiscyVM* vm = VM_init(progname);	/* Start the virtual machine */
 
 	while (VM_is_running(vm)) {
 
@@ -31,9 +39,19 @@ int main(int argc, char* argv[])
 		VM_decode(vm);
 		VM_execute(vm);
 
-//		memory_access();	// TODO: Remove this?
-//		write_back();		// TODO: Remove this?
-		printf("\n");
+		if (step) {
+			VM_print_regs(vm);
+			VM_print_data(vm);
+
+			printf("[ENTER]");
+			getchar();
+			printf("\n");
+		}
+	}
+
+	if (!step) {
+		VM_print_regs(vm);
+		VM_print_data(vm);
 	}
 
 	VM_shutdown(vm);

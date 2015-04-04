@@ -15,4 +15,4 @@ loop:	add	r4, r1, r1		# term = counter * 2
 	addi	r1, r1, 0000001		# counter += 1
 	beq	r0, r0, loop		# Unconditional branch to loop
 
-end:	sw	r4, r0, result		# Store sum in result
+end:	sw	r3, r0, result		# Store sum in result

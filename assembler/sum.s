@@ -7,6 +7,7 @@ result:	.fill	0000000000000000	# Store the result here
 	addi	r2, r0, 0001010		# r2 = 10	( max     )
 	addi	r3, r0, 0000000		# r3 = 0	( sum     )
 	addi	r4, r0, 0000000		# r4 = 0	( term    )
+	addi	r5, r0, 1100000		# r5 = some negative number, test
 
 loop:	add	r4, r1, r1		# term = counter * 2
 	add	r3, r3, r4		# sum += term
@@ -14,4 +15,4 @@ loop:	add	r4, r1, r1		# term = counter * 2
 	addi	r1, r1, 0000001		# counter += 1
 	beq	r0, r0, loop		# Unconditional branch to loop
 
-end:	sw	r4, r0, result		# Store sum in result
+end:	sw	r3, r0, result		# Store sum in result
