@@ -39,11 +39,11 @@ label_list_t* label_list_init()
 	return list;
 }
 
-void label_list_add_label(label_list_t* list, char* name, char* address)
+void label_list_add(label_list_t* list, char* name, uint16_t address)
 {
 	label_t*	label;
 
-	if (list == NULL || name == NULL || address == NULL) {
+	if (list == NULL || name == NULL) {
 		fprintf(stderr,
 			"%s:%s: [!] Error: NULL parameter.",
 			__FILE__, __func__);
@@ -59,12 +59,12 @@ void label_list_add_label(label_list_t* list, char* name, char* address)
 	}
 
 	strcpy(label->name, name);
-	strcpy(label->address, address);
+	label->address = address;
 
 	list->labels[list->nbr_labels++] = label;
 }
 
-char* label_list_get_address(label_list_t* list, char* name)
+uint16_t label_list_get_address(label_list_t* list, char* name)
 {
 	for (int i = 0; i < list->nbr_labels; ++i) {
 		if (streq(name, list->labels[i]->name)) {
@@ -73,7 +73,7 @@ char* label_list_get_address(label_list_t* list, char* name)
 	}
 	printf("[!] %s: %s: Could not find label \"%s\".\n",
 		__FILE__, __func__, name);
-	return NULL;
+	exit(EXIT_FAILURE);
 }
 
 bool label_list_contains(label_list_t* list, char* name)
@@ -100,7 +100,7 @@ void label_list_print(label_list_t* list)
 	printf("Printing labels:\n");
 	for (i = 0; i < list->nbr_labels; ++i) {
 		printf(
-			"%s:\t%s\n",
+			"%s:\t%04x\n",
 			list->labels[i]->name,
 			list->labels[i]->address
 		);
@@ -109,9 +109,26 @@ void label_list_print(label_list_t* list)
 
 void label_list_free(label_list_t* list)
 {
-	// free shit here
+	for (int i = 0; i < list->nbr_labels; ++i) {
+		if (list->labels[i] != NULL) {
+			free(list->labels[i]);
+		}
+	}
+	if (list != NULL) {
+		free(list);
+	}
 }
 
+uint16_t get_reg_num(const char* reg)
+{
+	if (strlen(reg) != 2) {
+		printf("[!] Compile error: Invalid token [%s].\n", reg);
+		exit(EXIT_FAILURE);
+	}
+	return reg[1] - '0';
+}
+
+#if 0
 char* get_reg_bin(const char* name)
 {
 	if (streq(name, "r0"))	return "000";
@@ -191,4 +208,5 @@ void parse_jalr(char* str, char* arg1, char* arg2)
 	strcat(str, get_reg_bin(arg2));
 	strcat(str, "0000000");
 }
+#endif
 

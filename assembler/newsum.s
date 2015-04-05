@@ -1,9 +1,9 @@
 # sum.s
 # Computes sum{2*k, k=1..10}
 
-result:	.fill	0000000000000000	# Store the result here
-bigneg:	.fill	1000000000000000	# test of big negative number
-smlneg:	.fill	1111111111111100	# test of small negative number
+result:	.fill	0b0000000000000000	# Store the result here
+bigneg:	.fill	0b1000000000000000	# test of big negative number
+smlneg:	.fill	0b1111111111111100	# test of small negative number
 
 	addi	r1, r0, 0000000		# r1 = 0	( counter )
 	addi	r2, r0, 0001010		# r2 = 10	( max     )

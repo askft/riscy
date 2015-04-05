@@ -33,20 +33,11 @@ char* dec_to_bin(char* bin, int dec, int nbr_bits)
 	return bin;
 }
 
-int bin_to_dec(char* bin)
+uint16_t str_to_int(const char* str)
 {
-	return (int) strtol(bin, NULL, 2);
-}
-
-bool is_binary(const char* str)
-{
-	unsigned long i;
-	for (i = 0; i < strlen(str); ++i) {
-		if (str[i] != '0' && str[i] != '1') {
-			return false;
-		}
-	}
-	return true;
+	return (uint16_t) strtol(str, NULL, 	is_binary(str)	? 2 :
+						is_hex(str)	? 16 :
+						/* else */	  10);
 }
 
 void remove_comments(char* line)
@@ -76,6 +67,28 @@ void remove_trailing_whitespace(char* line)
 char strlast(const char* str)
 {
 	return str[strlen(str) - 1];
+}
+
+bool is_binary(const char* str)
+{
+	unsigned long i;
+	for (i = 0; i < strlen(str); ++i) {
+		if (str[i] != '0' && str[i] != '1') {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool is_hex(const char* str)
+{
+	unsigned long i;
+	for (i = 0; i < strlen(str); ++i) {
+		if ( ! (isdigit(str[i]) || 'a' <= str[i] || str[i] <= 'f') ) {
+			return false;
+		}
+	}
+	return true;
 }
 
 bool is_instruction(const char* str)

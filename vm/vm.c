@@ -61,7 +61,7 @@ struct instruction_t {
 struct RiscyVM {
 	int16_t		regs[NUM_REGISTERS];	/* Registers */
 	uint16_t	program[MEMORY_SIZE];	/* Integer instructions */
-	int16_t*	data;			/* Signed 16 bit data array */
+//	int16_t*	data;			/* Signed 16 bit data array */
 	uint16_t	pc;			/* Program counter */
 
 	metadata_t	metadata;		/* Information about program */
@@ -98,6 +98,9 @@ RiscyVM* VM_init(char filename[])
 	/* Initialize all registers to hold the value 0 */
 	memset(vm->regs, 0, sizeof vm->regs);
 
+	/* Set r7 to point to the top of the stack */
+	vm->regs[7] = vm->program[MEMORY_SIZE - 1];
+
 	/* Load each line of the binary program into the VM's program array */
 	int num_lines = load_to_array_from_file(vm->program, file);
 
@@ -119,19 +122,19 @@ RiscyVM* VM_init(char filename[])
 
 	/* XXX(New) Allocate memory for an array of data. This array is just a
 	 *  copy of the data part of the program array. */
-	vm->data = calloc(md->data_size, sizeof *vm->data);
+//	vm->data = calloc(md->data_size, sizeof *vm->data);
 
 	/* Copy the data mentioned above */
-	for (int i = 0; i < md->data_size; ++i) {
-		printf(	"Performing the assignment:\n"
-			"vm->data[%d] = vm->program[%d]\n\n",
-			i, md->data_start + i);
-		vm->data[i] = vm->program[md->data_start + i];
-
-		sign_n_bits(&vm->data[i], 16);
-
-		printf("vm->data[%d] = %d\n", i, vm->data[i]);
-	}
+//	for (int i = 0; i < md->data_size; ++i) {
+//		printf(	"Performing the assignment:\n"
+//			"vm->data[%d] = vm->program[%d]\n\n",
+//			i, md->data_start + i);
+//		vm->data[i] = vm->program[md->data_start + i];
+//
+//		sign_n_bits(&vm->data[i], 16);
+//
+//		printf("vm->data[%d] = %d\n", i, vm->data[i]);
+//	}
 
 	/* Print metadata */
 	printf("vm->metadata.data_size  = %d\n", md->data_size);
@@ -151,8 +154,8 @@ RiscyVM* VM_init(char filename[])
 
 void VM_shutdown(RiscyVM* vm)
 {
-	if (vm->data != NULL)
-		free(vm->data);
+//	if (vm->data != NULL)
+//		free(vm->data);
 
 	if (vm != NULL)
 		free(vm);
@@ -196,8 +199,13 @@ void VM_print_data(RiscyVM* vm)
 //		printf("DATA[%*d] = %d\n", 2, i, vm->program[i]);
 //	}
 
+//	for (int i = 0; i < vm->metadata.data_size; ++i) {
+//		printf("Data[ %*d ] = %"PRId16"\n", 2, i, vm->data[i]);
+//	}
+
 	for (int i = 0; i < vm->metadata.data_size; ++i) {
-		printf("Data[ %*d ] = %"PRId16"\n", 2, i, vm->data[i]);
+		printf("Data[ %*d ] = %"PRId16"\n", 2, i,
+			(int16_t) vm->program[vm->metadata.data_start + i]);
 	}
 }
 
@@ -250,6 +258,11 @@ void VM_decode(RiscyVM* vm)
 
 	/* If the MSB of simm is 1, convert to the negative version */
 	sign_n_bits(&simm, 7);
+
+	/* The contents of register 0 should always be 0 */
+	if (regA == 0)	{ vm->regs[regA] = 0; }
+	if (regB == 0)	{ vm->regs[regB] = 0; }
+	if (regC == 0)	{ vm->regs[regC] = 0; }
 
 //	printf("opcode = %d\n", opcode);
 //	printf("regA = %d\n", regA);
@@ -357,17 +370,33 @@ static void nand(RiscyVM* vm, uint16_t regA, uint16_t regB, uint16_t regC)
 
 static void lui(RiscyVM* vm, uint16_t regA, uint16_t uimm) 
 {
-	vm->regs[regA] = uimm & 0xffc0;	/* Load upper 10 bits of [uimm] */
+//	vm->regs[regA] = uimm & 0xffc0;	/* Load upper 10 bits of [uimm] */
+//
+//	// XXX New
+//
+//	vm->regs[regA] = uimm & 0xffc0;
+//	vm->regs[regA] = vm->regs[regA] << 6;
+
+	// XXX This should be correct. [uimm] is a 16 bit number with the
+	// 6 most significant bits AND:ed to 0. Shifting it left by 6 will
+	// set it to nnnnnnnnnn000000
+	vm->regs[regA] = uimm << 6;
+
+	if ((vm->regs[regA] & 0x3f) != 0) {
+		printf("LUI: Something went wrong!\n");
+	}
 }
 
 static void sw(RiscyVM* vm, uint16_t regA, uint16_t regB, int16_t simm)
 {
-	vm->data[vm->regs[regB] + simm - 1] = vm->regs[regA];
+//	vm->data[vm->regs[regB] + simm - 1] = vm->regs[regA];
+	vm->program[vm->regs[regB] + simm] = vm->regs[regA];
 }
 
 static void lw(RiscyVM* vm, uint16_t regA, uint16_t regB, int16_t simm)
 {
-	vm->regs[regA] = vm->data[vm->regs[regB] + simm - 1];
+//	vm->regs[regA] = vm->data[vm->regs[regB] + simm - 1];
+	vm->regs[regA] = vm->program[vm->regs[regB] + simm];
 }
 
 static void beq(RiscyVM* vm, uint16_t regA, uint16_t regB, int16_t simm)

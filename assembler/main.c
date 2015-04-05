@@ -3,6 +3,10 @@
 #include "assembler.h"
 #include "utility.h"
 
+/* TODO(Alexander)
+ * 	Search for all TODOs in assembler.c.
+ */
+
 int main(int argc, char* argv[])
 {
 	char*	input_filename	= argv[1];	/* Assembly code to assemble */

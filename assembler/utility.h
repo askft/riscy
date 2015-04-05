@@ -8,14 +8,15 @@
 
 FILE*	safer_fopen			(char* filename, char* action);
 
-char*	dec_to_bin			(char* bin, int dec, int nbr_bits);
-int	bin_to_dec			(char* bin);
-bool	is_binary			(const char* str);
+uint16_t	str_to_int		(const char* str);
+char*		dec_to_bin		(char* bin, int dec, int nbr_bits);
 
 void	remove_comments			(char* line);
 void	remove_trailing_whitespace	(char* line);
 
 char	strlast				(const char* str);
+bool	is_binary			(const char* str);
+bool	is_hex				(const char* str);
 bool	is_instruction			(const char* str);
 bool	is_empty_line			(const char* str);
 bool	is_comment_line			(const char* str);
