@@ -13,12 +13,10 @@ int main(int argc, char* argv[])
 	char*	output_filename	= argv[2];	/* Output of assembled code */
 	char*	tmp_filename1	= "tmp/tmp1.s";	/* Temporary buffer file 1 */
 	char*	tmp_filename2	= "tmp/tmp2.s";	/* Temporary buffer file 2 */
-//	char*	tmp_filename3	= "tmp3.o";
 	FILE*	input		= NULL;	
 	FILE*	output		= NULL;		
 	FILE*	tmpfile1	= NULL;
 	FILE*	tmpfile2	= NULL;
-//	FILE*	tmpfile3	= NULL;
 
 	label_list_t*	list;		/* Will be assigned to the return value
 					   of the parsed_labels function, to
@@ -49,6 +47,10 @@ int main(int argc, char* argv[])
 	/* First temporary file should now be read from instead of written to */
 	fclose(tmpfile1);
 	tmpfile1 = safer_fopen(tmp_filename1, "r");
+
+	printf("Start : check_register\n");
+	check_registers(tmpfile1);
+	printf("End   : check_register\n");
 
 	/* Scan for labels and store their respective addresses */
 	list = label_list_init();
@@ -81,12 +83,9 @@ int main(int argc, char* argv[])
 	output = safer_fopen(output_filename, "a");
 
 	/* Assemble the instructions to binary */
-	printf("Start : assemble_test.\n");
+	printf("Start : assemble_text.\n");
 	assemble_text(output, tmpfile2);
 	printf("End   : assemble_text.\n\n");
-
-	/* Remove all empty lines */
-//	remove_empty_lines(
 
 	/* Done with the assembly. Close all files and free all memory. */
 	fclose(input);

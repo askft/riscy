@@ -20,10 +20,9 @@ const char* instructions[NBR_INSTRUCTIONS] = {
 
 label_list_t* label_list_init()
 {
-	int		i;
 	label_list_t*	list;
 	
-	list = malloc(sizeof(label_list_t));
+	list = malloc(sizeof *list);
 	if (list == NULL) {
 		fprintf(stderr,
 			"%s:%s: [!] Error: Failed to allocate memory.\n",
@@ -32,7 +31,7 @@ label_list_t* label_list_init()
 	}
 
 	list->nbr_labels = 0;
-	for (i = 0; i < MAX_LABELS; ++i) {
+	for (int i = 0; i < MAX_LABELS; ++i) {
 		list->labels[i] = NULL;
 	}
 
@@ -50,7 +49,7 @@ void label_list_add(label_list_t* list, char* name, uint16_t address)
 		exit(EXIT_FAILURE);
 	}
 
-	label = malloc(sizeof(label_t));
+	label = malloc(sizeof *label);
 	if (label == NULL) {
 		fprintf(stderr,
 			"%s:%s: [!] Error: Failed to allocate memory.\n",
@@ -88,8 +87,6 @@ bool label_list_contains(label_list_t* list, char* name)
 
 void label_list_print(label_list_t* list)
 {
-	int i;
-
 	if (list == NULL) {
 		fprintf(stderr,
 			"%s:%s: [!] Error: NULL parameter.",
@@ -98,9 +95,9 @@ void label_list_print(label_list_t* list)
 	}
 
 	printf("Printing labels:\n");
-	for (i = 0; i < list->nbr_labels; ++i) {
+	for (int i = 0; i < list->nbr_labels; ++i) {
 		printf(
-			"%s:\t%04x\n",
+			"&%s\t= 0x%04x\n",
 			list->labels[i]->name,
 			list->labels[i]->address
 		);

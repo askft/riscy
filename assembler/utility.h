@@ -15,6 +15,7 @@ void	remove_comments			(char* line);
 void	remove_trailing_whitespace	(char* line);
 
 char	strlast				(const char* str);
+bool	is_dec				(const char* str);
 bool	is_binary			(const char* str);
 bool	is_hex				(const char* str);
 bool	is_instruction			(const char* str);

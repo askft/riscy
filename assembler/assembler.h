@@ -6,14 +6,20 @@
 
 /* PASSES
  * Pass 1:	Remove comments and trailing whitespace.
- * Pass 2:	Store the addresses of all labels that end with ':'.
- * Pass 3:	Replace labels with their addresses from pass 2.
+ * Pass 2:	Check so that there are valid registers.
+ * Pass 3:	Store the addresses of all labels that end with ':'.
+ * Pass 4:	Replace labels with their addresses from pass 2.
  * 		Also report symbol errors.
- * Pass 4:
+ * Pass 5:	Assemble data.
+ * Pass 6:	Assemble text.
  */
 
-/* Removes comments, trailing whitespace (((((XXX and empty lines))))) */
+/* Removes comments and trailing whitespace */
 void	file_cleanup	(FILE* output, FILE* input);
+
+/* Check so that there are no tokens that begin with 'r' and end with one or
+ * more digits. */
+void	check_registers	(FILE* input);
 
 /* Search for labels in "input" and stores them in "list" */
 void	parse_labels	(FILE* input, label_list_t* list);
@@ -23,7 +29,6 @@ void	parse_labels	(FILE* input, label_list_t* list);
 void	replace_labels	(FILE* output, FILE* input, label_list_t* list);
 
 /* Converts a "clean" file with assembly instructions to ones and zeros */
-
 void	assemble_data	(FILE* output, FILE* input);
 void	assemble_text	(FILE* output, FILE* input);
 
