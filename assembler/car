@@ -3,10 +3,10 @@ gcc -g main.c assembler.c riscy.c utility.c \
 	-Wall -Wextra -pedantic -std=c11 \
 	-o tmp/a.out && \
 \
-./tmp/a.out newsum.s newsum && \
+./tmp/a.out sum.s sum && \
 \
 echo "------------------------ Start [input]:" && \
-cat newsum.s && \
+cat sum.s && \
 echo "------------------------ End [input]" && \
 echo "" && \
 echo "------------------------ Start tmp1.s:" && \
@@ -18,6 +18,6 @@ cat tmp/tmp2.s && \
 echo "------------------------ End tmp2.s" && \
 echo "" && \
 echo "------------------------ Start [output]:" && \
-cat newsum && \
+cat sum && \
 echo "------------------------ End [output]" && \
 rm -R tmp/*

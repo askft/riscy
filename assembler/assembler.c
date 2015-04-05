@@ -322,8 +322,8 @@ void assemble_data(FILE* output, FILE* input)
 #endif
 
 	/* Print as hex */
-//	char format[] = "0x%04x\n";
-	char format[] = "%"PRIu16"\n";
+	char format[] = "0x%04x\n";
+//	char format[] = "%"PRIu16"\n";
 	fprintf(output, format, data_size);
 	for (int i = 0; i < data_size; ++i) {
 		fprintf(output, format, lines_out[i]);
@@ -357,8 +357,8 @@ void assemble_text(FILE* output, FILE* input)
 #endif
 
 	/* Print as hex */
-//	char format[] = "0x%04x\n";
-	char format[] = "%"PRIu16"\n";
+	char format[] = "0x%04x\n";
+//	char format[] = "%"PRIu16"\n";
 	fprintf(output, format, text_size);
 	for (int i = 0; i < text_size; ++i) {
 		fprintf(output, format, lines_out[i]);

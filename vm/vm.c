@@ -7,7 +7,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MEMORY_SIZE		(0x0000ffff)
+/* TODO(Alexander)
+ * 	Should every integer have the type uint16_t? The only time I would want
+ * 	them as int16_t is when printing them. Right?
+ */
+
+#define MEMORY_SIZE		(0x7fff)	/* 2^15 - 1 */
 #define WORD_SIZE		(16)
 #define NUM_REGISTERS		(8)
 
@@ -99,7 +104,8 @@ RiscyVM* VM_init(char filename[])
 	memset(vm->regs, 0, sizeof vm->regs);
 
 	/* Set r7 to point to the top of the stack */
-	vm->regs[7] = vm->program[MEMORY_SIZE - 1];
+	vm->regs[7] = MEMORY_SIZE;
+	printf("vm->regs[7] = %"PRIu16"\n", vm->regs[7]);
 
 	/* Load each line of the binary program into the VM's program array */
 	int num_lines = load_to_array_from_file(vm->program, file);
@@ -120,27 +126,12 @@ RiscyVM* VM_init(char filename[])
 	md->text_header = md->data_start + md->data_size;
 	md->text_start	= md->text_header + 1;
 
-	/* XXX(New) Allocate memory for an array of data. This array is just a
-	 *  copy of the data part of the program array. */
-//	vm->data = calloc(md->data_size, sizeof *vm->data);
-
-	/* Copy the data mentioned above */
-//	for (int i = 0; i < md->data_size; ++i) {
-//		printf(	"Performing the assignment:\n"
-//			"vm->data[%d] = vm->program[%d]\n\n",
-//			i, md->data_start + i);
-//		vm->data[i] = vm->program[md->data_start + i];
-//
-//		sign_n_bits(&vm->data[i], 16);
-//
-//		printf("vm->data[%d] = %d\n", i, vm->data[i]);
-//	}
-
 	/* Print metadata */
-	printf("vm->metadata.data_size  = %d\n", md->data_size);
-	printf("vm->metadata.data_start = %d\n", md->data_start);
-	printf("vm->metadata.text_size  = %d\n", md->text_size);
-	printf("vm->metadata.text_start = %d\n", md->text_start);
+	printf("vm->metadata.data_start  = %d\n", md->data_start);
+	printf("vm->metadata.data_size   = %d\n", md->data_size);
+	printf("vm->metadata.text_header = %d\n", md->text_header);
+	printf("vm->metadata.text_start  = %d\n", md->text_start);
+	printf("vm->metadata.text_size   = %d\n", md->text_size);
 
 	/* Set program counter to point to the first instruction */
 	vm->pc = md->text_start;
@@ -154,9 +145,6 @@ RiscyVM* VM_init(char filename[])
 
 void VM_shutdown(RiscyVM* vm)
 {
-//	if (vm->data != NULL)
-//		free(vm->data);
-
 	if (vm != NULL)
 		free(vm);
 }
@@ -194,15 +182,6 @@ void VM_print_regs(RiscyVM* vm)
 
 void VM_print_data(RiscyVM* vm)
 {
-//	metadata_t md = vm->metadata;
-//	for (int i = md.data_start; i < md.data_start + md.data_size; ++i) {
-//		printf("DATA[%*d] = %d\n", 2, i, vm->program[i]);
-//	}
-
-//	for (int i = 0; i < vm->metadata.data_size; ++i) {
-//		printf("Data[ %*d ] = %"PRId16"\n", 2, i, vm->data[i]);
-//	}
-
 	for (int i = 0; i < vm->metadata.data_size; ++i) {
 		printf("Data[ %*d ] = %"PRId16"\n", 2, i,
 			(int16_t) vm->program[vm->metadata.data_start + i]);
@@ -389,13 +368,11 @@ static void lui(RiscyVM* vm, uint16_t regA, uint16_t uimm)
 
 static void sw(RiscyVM* vm, uint16_t regA, uint16_t regB, int16_t simm)
 {
-//	vm->data[vm->regs[regB] + simm - 1] = vm->regs[regA];
 	vm->program[vm->regs[regB] + simm] = vm->regs[regA];
 }
 
 static void lw(RiscyVM* vm, uint16_t regA, uint16_t regB, int16_t simm)
 {
-//	vm->regs[regA] = vm->data[vm->regs[regB] + simm - 1];
 	vm->regs[regA] = vm->program[vm->regs[regB] + simm];
 }
 
@@ -406,7 +383,7 @@ static void beq(RiscyVM* vm, uint16_t regA, uint16_t regB, int16_t simm)
 	}
 	if (vm->regs[regA] == vm->regs[regB]) {
 		printf("<< Equal contents >>\n");
-		vm->pc = simm + 1;
+		vm->pc = simm;
 	}
 }
 
@@ -424,18 +401,16 @@ static uint16_t load_to_array_from_file(uint16_t array[], FILE* file)
 	char		buffer[WORD_SIZE + 1 + 1];
 
 	while (fgets(buffer, sizeof buffer, file)) {
-		strtok(buffer, "\n");	/* Strip the newline character */
-		array[num_lines++] = (uint16_t) strtol(buffer, NULL, 2);
-//		printf("Last 7 = ");
-//		for (int i = 9; i <= 16; ++i)
-//			printf("%c", buffer[i]);
-//		printf("\n");
+		strtok(buffer, "\n");
+		array[num_lines++] = (uint16_t) strtol(buffer, NULL, 16);
+	//	array[num_lines++] = (uint16_t) strtol(buffer, NULL, 10);
 	}
 
 	printf("Done loading program. Printing loaded values:\n");
 	printf("-------------\n");
 	for (int i = 0; i < num_lines; ++i) {
-		printf("\t%x\n", array[i]);
+		printf("\t0x%04x\n", array[i]);
+	//	printf("\t%"PRIu16"\n", array[i]);
 	}
 	printf("-------------\n");
 
