@@ -278,9 +278,7 @@ void VM_execute(RiscyVM* vm)
 
 	case JALR:
 		printf("jalr r%d, r%d\n", regA, regB);
-		/* regA shall be reserved on calls as it contains the address of the
-		 * calling instruction */
-		vm->regs[regA] = vm->pc; /* XXX Changed from vm->pc + 1 */
+		vm->regs[regA] = vm->pc;
 		vm->pc = vm->regs[regB];
 		break;
 	}
@@ -320,92 +318,6 @@ static void test_mask(uint16_t mask, uint16_t result)
 {
 	if (mask != result)
 		printf("[!] Invalid mask 0x%x.\n", mask);
-}
-#endif
-
-//==============================================================================
-
-//==============================================================================
-
-//==============================================================================
-
-//==============================================================================
-
-//==============================================================================
-
-#if 0
-static void add	(RiscyVM* vm, uint16_t regA, uint16_t regB, uint16_t regC);
-static void addi(RiscyVM* vm, uint16_t regA, uint16_t regB, uint16_t simm);
-static void nand(RiscyVM* vm, uint16_t regA, uint16_t regB, uint16_t regC);
-static void lui	(RiscyVM* vm, uint16_t regA, uint16_t uimm);
-static void sw	(RiscyVM* vm, uint16_t regA, uint16_t regB, uint16_t simm);
-static void lw	(RiscyVM* vm, uint16_t regA, uint16_t regB, uint16_t simm);
-static void beq	(RiscyVM* vm, uint16_t regA, uint16_t regB, uint16_t simm);
-static void jalr(RiscyVM* vm, uint16_t regA, uint16_t regB);
-#endif
-
-#if 0
-static void add(RiscyVM* vm, uint16_t regA, uint16_t regB, uint16_t regC)
-{
-	vm->regs[regA] = vm->regs[regB] + vm->regs[regC];
-}
-
-static void addi(RiscyVM* vm, uint16_t regA, uint16_t regB, uint16_t simm)
-{
-	vm->regs[regA] = vm->regs[regB] + simm;
-}
-
-static void nand(RiscyVM* vm, uint16_t regA, uint16_t regB, uint16_t regC)
-{
-	vm->regs[regA] = ~(vm->regs[regB] & vm->regs[regC]);
-}
-
-static void lui(RiscyVM* vm, uint16_t regA, uint16_t uimm) 
-{
-//	vm->regs[regA] = uimm & 0xffc0;	/* Load upper 10 bits of [uimm] */
-//
-//	// XXX New
-//
-//	vm->regs[regA] = uimm & 0xffc0;
-//	vm->regs[regA] = vm->regs[regA] << 6;
-
-	// XXX This should be correct. [uimm] is a 16 bit number with the
-	// 6 most significant bits AND:ed to 0. Shifting it left by 6 will
-	// set it to nnnnnnnnnn000000
-	vm->regs[regA] = uimm << 6;
-
-	if ((vm->regs[regA] & 0x3f) != 0) {
-		printf("LUI: Something went wrong!\n");
-	}
-}
-
-static void sw(RiscyVM* vm, uint16_t regA, uint16_t regB, uint16_t simm)
-{
-	vm->program[vm->regs[regB] + simm] = vm->regs[regA];
-}
-
-static void lw(RiscyVM* vm, uint16_t regA, uint16_t regB, uint16_t simm)
-{
-	vm->regs[regA] = vm->program[vm->regs[regB] + simm];
-}
-
-static void beq(RiscyVM* vm, uint16_t regA, uint16_t regB, uint16_t simm)
-{
-	if (regA == regB) {
-		printf("<< Unconditional branch >>\n");
-	}
-	if (vm->regs[regA] == vm->regs[regB]) {
-		printf("<< Equal contents >>\n");
-		vm->pc = simm;
-	}
-}
-
-static void jalr(RiscyVM* vm, uint16_t regA, uint16_t regB)
-{
-	/* regA shall be reserved on calls as it contains the address of the
-	 * calling instruction */
-	vm->regs[regA] = vm->pc + 1;
-	vm->pc = vm->regs[regB];
 }
 #endif
 
