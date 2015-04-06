@@ -6,9 +6,7 @@
 #include "vm.h"
 
 /* TODO(Alexander)
- * 	- Look at all TODOs and XXXs in the vm.c file. They basically say:
- * 		* Make the file shorter?
- * 		* Does the program need to keep track of the instruction format?
+ *
  */
 
 int main(int argc, char* argv[])

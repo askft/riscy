@@ -1,7 +1,7 @@
 # sum.s
 # Computes sum{2*k, k=1..10}
 
-result:	.fill	0000000000000000	# Store the result here
+result:	.fill	0			# Store the result here
 
 	addi	r1, r0, 0		# r1 = 0	( counter )
 	addi	r2, r0, 10		# r2 = 10	( max     )
