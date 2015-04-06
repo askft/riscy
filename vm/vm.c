@@ -32,6 +32,10 @@
 #define MASK_SIMM	(0x007f)	/* 0000 0000 0111 1111 */
 #define MASK_UIMM	(0x03ff)	/* 0000 0011 1111 1111 */
 
+static uint16_t	load_to_array_from_file	(uint16_t array[], FILE* file);
+static char*	dec_to_bin		(char* bin, int dec, int nbr_bits);
+static void	sign_n_bits		(uint16_t* s, unsigned int n);
+
 typedef struct	metadata_t	metadata_t;
 typedef struct	instruction_t	instruction_t;
 
@@ -63,10 +67,6 @@ struct RiscyVM {
 	bool		is_running;		/* PC != last instruction */
 };
 
-
-//static void	test_mask		(uint16_t mask, uint16_t result);
-static void	sign_n_bits		(uint16_t* s, unsigned int n);
-static uint16_t	load_to_array_from_file	(uint16_t array[], FILE* file);
 
 RiscyVM* VM_init(char filename[])
 {
@@ -172,22 +172,12 @@ void VM_print_data(RiscyVM* vm)
 
 void VM_fetch(RiscyVM* vm)
 {
-	if (vm->pc == vm->metadata.text_header + vm->metadata.text_size) {
+	if (vm->pc >= vm->metadata.text_header + vm->metadata.text_size) {
 		printf("Executing last instruction. <-------------- [!]\n");
 		vm->is_running = false;
 	}
 
 	vm->pc += 1;
-}
-
-char* dec_to_bin(char* bin, int dec, int nbr_bits)
-{
-	int i;
-	bin[nbr_bits] = '\0';
-	for (i = nbr_bits - 1; i >= 0; --i, dec >>= 1) {
-		bin[i] = (dec & 1) + '0';
-	}
-	return bin;
 }
 
 void VM_decode(RiscyVM* vm)
@@ -247,9 +237,8 @@ void VM_execute(RiscyVM* vm)
 
 	case LUI:
 		printf("lui r%d, "PRINT_FORMAT"\n", regA, uimm);
-	
 		/* [uimm] is a 16 bit number with the 6 MSB's AND:ed to 0.
-		 * Shifting it left by 6 will set it to nnnnnnnnnn000000. */
+		 * Shifting it left by 6 will result in bbbbbbbbbb000000. */
 		vm->regs[regA] = uimm << 6;
 
 		if ((vm->regs[regA] & 0x3f) != 0) {
@@ -272,7 +261,7 @@ void VM_execute(RiscyVM* vm)
 		printf("beq r%d, r%d, "PRINT_FORMAT"\n", regA, regB, simm);
 		if (vm->regs[regA] == vm->regs[regB]) {
 			printf("<< Equal contents >>\n");
-			vm->pc = simm;
+			vm->pc += simm;
 		}
 		break;
 
@@ -294,14 +283,28 @@ static uint16_t load_to_array_from_file(uint16_t array[], FILE* file)
 		array[num_lines++] = (uint16_t) strtol(buffer, NULL, 16);
 	}
 
-	printf("Done loading program. Printing loaded values:\n");
+	printf("Done loading input file. Printing loaded values:\n");
 	printf("-------------\n");
 	for (int i = 0; i < num_lines; ++i) {
-		printf("\t0x%04x\n", array[i]);
+		printf("%d:\t0x%04x", i, array[i]);
+
+		printf("%s\n",	i == 0		  ? "  <-- Data header" :
+				i == array[0] + 1 ? "  <-- Text header" :
+				"");
 	}
 	printf("-------------\n");
 
 	return num_lines;
+}
+
+static char* dec_to_bin(char* bin, int dec, int nbr_bits)
+{
+	int i;
+	bin[nbr_bits] = '\0';
+	for (i = nbr_bits - 1; i >= 0; --i, dec >>= 1) {
+		bin[i] = (dec & 1) + '0';
+	}
+	return bin;
 }
 
 static void sign_n_bits(uint16_t* s, unsigned int n)
@@ -312,12 +315,4 @@ static void sign_n_bits(uint16_t* s, unsigned int n)
 		printf("0x%04x\n", *s);
 	}
 }
-
-#if 0
-static void test_mask(uint16_t mask, uint16_t result)
-{
-	if (mask != result)
-		printf("[!] Invalid mask 0x%x.\n", mask);
-}
-#endif
 

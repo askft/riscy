@@ -177,6 +177,44 @@ void replace_labels(FILE* output, FILE* input, label_list_t* list)
 				continue;
 			}
 
+			/* beq (Branch If Equals) must be parsed separately
+			 * because it can be written both with a label or a
+			 * number as its immediate argument */
+			if (streq(token, "beq")) {
+				printf("GOT BEQ <-------------------\n");
+				strcat(buffer_out, token);
+				strcat(buffer_out, " ");
+				strcat(buffer_out, strtok(NULL, delimiters));
+				strcat(buffer_out, " ");
+				strcat(buffer_out, strtok(NULL, delimiters));
+				strcat(buffer_out, " ");
+
+				token = strtok(NULL, delimiters);
+				printf("beq arg 3 = %s\n", token);
+
+				/* If label, calculate offset with address */
+				if (label_list_contains(list, token)) {
+					uint16_t n =
+					label_list_get_address(list, token)
+					- address + 2;
+
+					sprintf(buffer_str, "0x%04x", n);
+
+				/* If number, just print number */
+				} else if (is_hex(token) || is_binary(token) ||
+						is_dec(token)) {
+					strcpy(buffer_str, token);
+
+				} else {
+					printf("[!] Compile error (line %d): "
+						"Invalid token \"%s\".\n",
+						address + 1, token);
+					exit(1);
+				}
+				strcat(buffer_out, buffer_str);
+				break;	/* Done, get next line */
+			}
+
 			char format[] = "0x%04x ";
 
 			if (label_list_contains(list, token)) {
@@ -266,7 +304,6 @@ void assemble_data(FILE* output, FILE* input)
 		 */
 		if (token[0] == '0' && token[1] == 'x')
 		{
-//			token += 2;
 			printf("token = %s\n", token);
 			if (strlen(token) != 2 + 4)
 			{
@@ -284,8 +321,7 @@ void assemble_data(FILE* output, FILE* input)
 
 		else if (token[0] == '0' && token[1] == 'b')
 		{
-			token += 2;
-			if (strlen(token) != 16)
+			if (strlen(token) != 2 + 16)
 			{
 				printf( "[!] Compile error: Line %d: binary "
 				"numbers must be 16 characters long; is %lu "
@@ -295,7 +331,7 @@ void assemble_data(FILE* output, FILE* input)
 			if (!is_binary(token))
 			{
 				printf( "[!] Compile error: Line %d: Invalid "
-				"binary number 0b%s.\n", line_nbr, token);
+				"binary number %s.\n", line_nbr, token);
 				exit(EXIT_FAILURE);
 			}
 		}
@@ -455,7 +491,7 @@ static void assemble_line(uint16_t* dest, uint16_t* line_num, const char* src)
 			: 0xe001; /* The ternary operator needs an "else" */
 
 		if (*dest == 0xe001) {
-			// TODO(Alexander): What happens if it wasn't a label?
+			// TODO(Alexander): What happens if it wasn't an opcode?
 			fprintf(stderr, "----------------------------------\n");
 			fprintf(stderr, "[!] Compile error (line %u): Unknown "
 					"opcode \"%s\".\n", *line_num, t);

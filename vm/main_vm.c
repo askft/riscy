@@ -16,20 +16,21 @@ int main(int argc, char* argv[])
 		exit(EXIT_FAILURE);
 	}
 
-//	char*	thisname	= argv[0];	/* Name of this C program */
-	char*	progname	= argv[1];	/* Name of binary code file */
+//	char*	thisname	= argv[0];	/* Name of this file */
+	char*	progname	= argv[1];	/* Name of input file */
 	bool	step		= false;
 
 	if (argv[2] != NULL) {
 		if (strcmp(argv[2], "--step") == 0) {
 			step = true;
 		} else {
-			printf("[!] Usage: cpu <input_filename> [options]\n");
+			printf("[!] Usage: ./vm <input_filename> [options]\n");
 			exit(EXIT_FAILURE);
 		}
 	}
 
-	RiscyVM* vm = VM_init(progname);	/* Start the virtual machine */
+	/* Start the virtual machine */
+	RiscyVM* vm = VM_init(progname);
 
 	while (VM_is_running(vm)) {
 

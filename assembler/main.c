@@ -11,8 +11,8 @@ int main(int argc, char* argv[])
 {
 	char*	input_filename	= argv[1];	/* Assembly code to assemble */
 	char*	output_filename	= argv[2];	/* Output of assembled code */
-	char*	tmp_filename1	= "tmp/tmp1.s";	/* Temporary buffer file 1 */
-	char*	tmp_filename2	= "tmp/tmp2.s";	/* Temporary buffer file 2 */
+	char*	tmp_filename1	= "fbf7c968";	/* Temporary buffer file 1 */
+	char*	tmp_filename2	= "62fe98d2";	/* Temporary buffer file 2 */
 	FILE*	input		= NULL;	
 	FILE*	output		= NULL;		
 	FILE*	tmpfile1	= NULL;
