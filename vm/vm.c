@@ -78,6 +78,11 @@ RiscyVM* VM_init(char filename[])
 	}
 
 	RiscyVM* vm = malloc(sizeof(RiscyVM));
+	if (vm == NULL) {
+		fprintf(stderr, "[!] %s: %s: Out of memory.\n",
+				__FILE__, __func__);
+		exit(EXIT_FAILURE);
+	}
 
 	/* Initialize all registers to hold the value 0 */
 	memset(vm->regs, 0, sizeof vm->regs);
@@ -88,6 +93,7 @@ RiscyVM* VM_init(char filename[])
 
 	/* Load each line of the binary program into the VM's program array */
 	int num_lines = load_to_array_from_file(vm->program, file);
+	printf("%d lines loaded from %s.\n", num_lines, filename);
 
 	/* Close the file; we don't need it anymore */
 	rewind(file);
@@ -240,14 +246,15 @@ void VM_execute(RiscyVM* vm)
 		break;
 
 	case LUI:
-		printf("lui r%d, %d\n", regA, uimm);
+		printf("lui r%d, "PRINT_FORMAT"\n", regA, uimm);
 	
 		/* [uimm] is a 16 bit number with the 6 MSB's AND:ed to 0.
 		 * Shifting it left by 6 will set it to nnnnnnnnnn000000. */
 		vm->regs[regA] = uimm << 6;
-	
+
 		if ((vm->regs[regA] & 0x3f) != 0) {
-			printf("LUI: Something went wrong!\n");
+			printf("%s: %s: LUI: Something went wrong!\n",
+					__FILE__, __func__);
 		}
 		break;
 
@@ -273,7 +280,7 @@ void VM_execute(RiscyVM* vm)
 		printf("jalr r%d, r%d\n", regA, regB);
 		/* regA shall be reserved on calls as it contains the address of the
 		 * calling instruction */
-		vm->regs[regA] = vm->pc + 1;
+		vm->regs[regA] = vm->pc; /* XXX Changed from vm->pc + 1 */
 		vm->pc = vm->regs[regB];
 		break;
 	}

@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	char*	thisname	= argv[0];	/* Name of this C program */
+//	char*	thisname	= argv[0];	/* Name of this C program */
 	char*	progname	= argv[1];	/* Name of binary code file */
 	bool	step		= false;
 

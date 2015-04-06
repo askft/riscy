@@ -1,6 +1,7 @@
 #ifndef PRINT_FORMAT_H
 #define PRINT_FORMAT_H
 
+#include <inttypes.h>
 
 /* Colors for terminal output. Do not modify. */
 #define KNRM	"\x1B[0m"

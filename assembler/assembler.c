@@ -427,7 +427,17 @@ static void assemble_line(uint16_t* dest, uint16_t* line_num, const char* src)
 
 		} else if (streq(t, "lui" )) {
 			regA = get_reg_num(arg1) << 10;
-			uimm = str_to_int(arg2) & MASK_LOW_10;
+//			printf("arg2 = %s\n", arg2);
+//			printf("str_to_int(arg2) = 0x%04x\n", str_to_int(arg2));
+//			printf("str_to_int(arg2) >> 6 = 0x%04x\n", str_to_int(arg2) >> 6);
+
+			uimm = str_to_int(arg2) >> 6;
+			// XXX	Before: uimm = str_to_int(arg2) & MASK_LOW_10
+			
+//			printf("uimm & 0x3ff = 0x%04x\n", uimm & 0x3ff);
+
+			/* XXX Probably unnecessary: */
+			uimm &= MASK_LOW_10;
 
 		} else if (streq(t, "jalr")) {
 			regA = get_reg_num(arg1) << 10;
