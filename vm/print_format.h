@@ -19,13 +19,13 @@
  * 	- DECS	prints as "   xyz"	where xyz is a signed 16-bit integer
  * 	- DECU	prints as "   xyz"	where xyz is an unsigned 16-bit integer
  */
-#define PRINT_HEX		0
+#define PRINT_HEX		1
 #define PRINT_DECS		0
-#define PRINT_DECU		1
+#define PRINT_DECU		0
 
-#define TABLE_PRINT_DECU	0
-#define TABLE_PRINT_DECS	0
 #define TABLE_PRINT_HEX		1
+#define TABLE_PRINT_DECS	0
+#define TABLE_PRINT_DECU	0
 
 #if PRINT_HEX
 	#define	PRINT_FORMAT	"0x%04x"

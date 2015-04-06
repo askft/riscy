@@ -112,7 +112,7 @@ RiscyVM* VM_init(char filename[])
 
 	/* Set program counter to point to the first instruction */
 	vm->pc = md->text_start;
-	printf("vm->pc = %"PRId16"\n", vm->pc);
+	printf("vm->pc = "PRINT_FORMAT"\n", vm->pc);
 
 	/* Set the running flag */
 	vm->is_running = true;
@@ -159,7 +159,7 @@ void VM_print_regs(RiscyVM* vm)
 void VM_print_data(RiscyVM* vm)
 {
 	for (int i = 0; i < vm->metadata.data_size; ++i) {
-		printf("Data[ %2d ] = %"PRId16"\n", i,
+		printf("Data[ %2d ] = "PRINT_FORMAT"\n", i,
 			vm->program[vm->metadata.data_start + i]);
 	}
 }
