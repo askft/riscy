@@ -18,7 +18,7 @@ The assembler currently handles labels, one directive (.fill), eight registers,
 | sw       | store word                   |
 | lw       | load word                    |
 | beq      | branch if equal              |
-| jalr     |                              |
+| jalr     | jump and link register       |
 
 
 ### The assembler
