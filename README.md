@@ -1,7 +1,24 @@
 # The Riscy Assembler and Virtual Machine
 
-This is a simple albeit functioning implementation of an assembler and a VM for
-the [RiSC-16](http://www.eng.umd.edu/~blj/RiSC/) instruction set.
+This is a simple implementation of an assembler and a VM for the
+[RiSC-16](http://www.eng.umd.edu/~blj/RiSC/) (Ridiculously Simple Computer) 
+instruction set.
+
+So far, only the most basic functionality of RiSC-16 has been implemented. 
+
+The assembler currently handles labels, one directive (.fill), eight registers,
+ and eight instructions:
+
+| Mnemonic | Long name                    |
+|----------|------------------------------|
+| add      | add                          |
+| addi     | add immediate                |
+| nand     | NOT AND (logical expression) |
+| lui      | load upper immediate         |
+| sw       | store word                   |
+| lw       | load word                    |
+| beq      | branch if equal              |
+| jalr     |                              |
 
 
 ### The assembler
@@ -49,13 +66,17 @@ into "machine code" such as this:
 
 ### The interpreter / virtual machine
 
-The virtual machine can read the "machine code" produced by the assembler,
-interpret it, and print registers and memory contents.
+First of all, the virtual machine is *very* simplistic; it is not hardware
+descriptive, i.e. not a simulation of an actual RiSC-16 processor. The source
+code can be found in [the vm directory](vm) in this repository.
+
+What the virtual machine can do is read the "machine code" produced by the
+assembler, interpret it, and print registers and memory contents.
 
 
 ### Motivation
 
 Before starting this project, I had no idea whatsoever how to implement an
 assembler nor a virtual machine. I'm not saying my implementations are idiomatic
-nor optimal, but this has been nothing more than a learning project.
+or optimal; this has been nothing more than a learning project.
 
