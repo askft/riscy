@@ -8,7 +8,7 @@ the [RiSC-16](http://www.eng.umd.edu/~blj/RiSC/) instruction set.
 
 The assembler can assemble code such as this:
 
-´´´
+```
 # sum.s
 # Computes sum{2*k, k=1..10}
 
@@ -26,11 +26,11 @@ loop:	add	r4, r1, r1		# term = counter * 2
 	beq	r0, r0, loop		# Unconditional branch to loop
 
 end:	sw	r3, r0, result		# Store sum in result
-´´´
+```
 
 into "machine code" such as this:
 
-´´´
+```
 0x0001
 0x0000
 0x000a
@@ -44,7 +44,7 @@ into "machine code" such as this:
 0x2481
 0xc07b
 0x8c01
-´´´
+```
 
 
 ### The interpreter / virtual machine
