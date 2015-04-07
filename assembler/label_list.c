@@ -1,22 +1,14 @@
-/* riscy.c */
+/* label_list.c */
+
+#include "label_list.h"
+#include "utility.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-#include "riscy.h"
-#include "utility.h"
-
 const char* instructions[NBR_INSTRUCTIONS] = {
 	"add", "addi", "nand", "lui", "sw", "lw", "beq", "jalr",
 };
-
-//unsigned int memory[MEM_SIZE] = { 0 };
-//unsigned int mempos_text = 0;
-
-//void memstore_text(unsigned int data)
-//{
-//	
-//}
 
 label_list_t* label_list_init()
 {
@@ -139,71 +131,6 @@ char* get_reg_bin(const char* name)
 
 	fprintf(stderr, "[!] Invalid register name: %s\n", name);
 	return NULL;
-}
-
-void parse_add(char* str, char* arg1, char* arg2, char* arg3)
-{
-	strcat(str, "000");
-	strcat(str, get_reg_bin(arg1));
-	strcat(str, get_reg_bin(arg2));
-	strcat(str, "0000");
-	strcat(str, get_reg_bin(arg3));
-}
-
-void parse_addi(char* str, char* arg1, char* arg2, char* arg3)
-{
-	strcat(str, "001");
-	strcat(str, get_reg_bin(arg1));
-	strcat(str, get_reg_bin(arg2));
-	strcat(str, arg3);
-}
-
-void parse_nand(char* str, char* arg1, char* arg2, char* arg3)
-{
-	strcat(str, "010");
-	strcat(str, get_reg_bin(arg1));
-	strcat(str, get_reg_bin(arg2));
-	strcat(str, "0000");
-	strcat(str, get_reg_bin(arg3));
-}
-
-void parse_lui(char* str, char* arg1, char* arg2)
-{
-	strcat(str, "011");
-	strcat(str, get_reg_bin(arg1));
-	strcat(str, arg2);
-}
-
-void parse_sw(char* str, char* arg1, char* arg2, char* arg3)
-{
-	strcat(str, "100");
-	strcat(str, get_reg_bin(arg1));
-	strcat(str, get_reg_bin(arg2));
-	strcat(str, arg3);
-}
-
-void parse_lw(char* str, char* arg1, char* arg2, char* arg3)
-{
-	strcat(str, "101");
-	strcat(str, get_reg_bin(arg1));
-	strcat(str, get_reg_bin(arg2));
-	strcat(str, arg3);
-}
-
-void parse_beq(char* str, char* arg1, char* arg2, char* arg3)
-{
-	strcat(str, "110");
-	strcat(str, get_reg_bin(arg1));
-	strcat(str, get_reg_bin(arg2));
-	strcat(str, arg3);
-}
-
-void parse_jalr(char* str, char* arg1, char* arg2)
-{
-	strcat(str, "111");
-	strcat(str, get_reg_bin(arg1));
-	strcat(str, get_reg_bin(arg2));
-	strcat(str, "0000000");
 }
 #endif
 

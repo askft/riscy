@@ -1,13 +1,12 @@
 /* utility.c */
 
+#include "utility.h"
+#include "label_list.h"
+
 #include <ctype.h>
 #include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "riscy.h"
-#include "utility.h"
-
 
 FILE* safer_fopen(char* filename, char* action)
 {

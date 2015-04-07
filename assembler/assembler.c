@@ -1,13 +1,15 @@
+/* assembler.c */
+
+#include "assembler.h"
+#include "label_list.h"
+#include "utility.h"
+
 #include <ctype.h>
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "assembler.h"
-#include "riscy.h"
-#include "utility.h"
 
 #define MAX_LINE_LENGTH	(1024)
 #define MAX		(1024)

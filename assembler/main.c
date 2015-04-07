@@ -1,7 +1,10 @@
-#include <stdlib.h>
+/* main.c */
 
 #include "assembler.h"
 #include "utility.h"
+
+#include <stdio.h>
+#include <stdlib.h>
 
 /* TODO(Alexander)
  * 	Search for all TODOs in assembler.c.

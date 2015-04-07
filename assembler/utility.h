@@ -4,6 +4,7 @@
 #define UTILITY_H
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 
 FILE*	safer_fopen			(char* filename, char* action);

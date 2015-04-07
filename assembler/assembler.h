@@ -1,8 +1,9 @@
 #ifndef ASSEMBLER_H
 #define ASSEMBLER_H
 
-#include "stdio.h"
-#include "riscy.h"
+#include "label_list.h"
+
+#include <stdio.h>
 
 /* PASSES
  * Pass 1:	Remove comments and trailing whitespace.
