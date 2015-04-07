@@ -1,5 +1,5 @@
 #include "vm.h"
-#include "print_format.h"
+#include "macros.h"
 
 #include <inttypes.h>
 #include <math.h>
@@ -7,13 +7,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* Constants  */
 #define MEMORY_SIZE		(0xffff)	/* 2^16 - 1 */
 #define WORD_SIZE		(16)
 #define NUM_REGISTERS		(8)
 
 // TODO(Alexander): Would this be better to use than the block below?
 //enum { ADD, ADDI, NAND, LUI, SW, LW, BEQ, JALR, }
-	
+
 /* Instructions */
 #define ADD	(0x000)
 #define ADDI	(0x001)
@@ -32,6 +33,7 @@
 #define MASK_SIMM	(0x007f)	/* 0000 0000 0111 1111 */
 #define MASK_UIMM	(0x03ff)	/* 0000 0011 1111 1111 */
 
+/* Utility functions */
 static uint16_t	load_to_array_from_file	(uint16_t array[], FILE* file);
 static char*	dec_to_bin		(char* bin, int dec, int nbr_bits);
 static void	sign_n_bits		(uint16_t* s, unsigned int n);
@@ -67,21 +69,18 @@ struct RiscyVM {
 	bool		is_running;		/* PC != last instruction */
 };
 
-
 RiscyVM* VM_init(char filename[])
 {
-	/* Attempt to open the binary program file */
-	FILE* file;
-	if ((file = fopen(filename, "r")) == NULL) {
-		fprintf(stderr, "[!] Invalid file: \"%s\".\n", filename);
-		exit(EXIT_FAILURE);
+	/* Attempt to open [filename], the machine code file */
+	FILE* file = fopen(filename, "r");
+	if (file == NULL) {
+		ERROR("\t%s", OUT_OF_MEMORY);
 	}
+
 
 	RiscyVM* vm = malloc(sizeof(RiscyVM));
 	if (vm == NULL) {
-		fprintf(stderr, "[!] %s: %s: Out of memory.\n",
-				__FILE__, __func__);
-		exit(EXIT_FAILURE);
+		ERROR("\t%s", OUT_OF_MEMORY);
 	}
 
 	/* Initialize all registers to hold the value 0 */
@@ -89,11 +88,12 @@ RiscyVM* VM_init(char filename[])
 
 	/* Set r7 to point to the top of the stack */
 	vm->regs[7] = MEMORY_SIZE;
-	printf("vm->regs[7] aka Stack Pointer = 0x%04x\n", vm->regs[7]);
+	DEBUG_VAR("", vm->regs[7], "\t(Stack Pointer)\n", "0x%04x");
 
 	/* Load each line of the binary program into the VM's program array */
+	printf("Loading values from file \"%s\" ... ", filename);
 	int num_lines = load_to_array_from_file(vm->program, file);
-	printf("%d lines loaded from %s.\n", num_lines, filename);
+	printf("%d lines loaded from \"%s\".\n\n", num_lines, filename);
 
 	/* Close the file; we don't need it anymore */
 	rewind(file);
@@ -109,16 +109,16 @@ RiscyVM* VM_init(char filename[])
 	md->text_header = md->data_start + md->data_size;
 	md->text_start	= md->text_header + 1;
 
-	/* Print metadata */
-	printf("vm->metadata.data_start  = "PRINT_FORMAT"\n", md->data_start);
-	printf("vm->metadata.data_size   = "PRINT_FORMAT"\n", md->data_size);
-	printf("vm->metadata.text_header = "PRINT_FORMAT"\n", md->text_header);
-	printf("vm->metadata.text_start  = "PRINT_FORMAT"\n", md->text_start);
-	printf("vm->metadata.text_size   = "PRINT_FORMAT"\n", md->text_size);
+	/* Debug metadata */
+	DEBUG_VAR("", md->data_start	, "\n", PRINT_FORMAT);
+	DEBUG_VAR("", md->data_size	, "\n", PRINT_FORMAT);
+	DEBUG_VAR("", md->text_header	, "\n", PRINT_FORMAT);
+	DEBUG_VAR("", md->data_start	, "\n", PRINT_FORMAT);
+	DEBUG_VAR("", md->data_start	, "\n", PRINT_FORMAT);
 
 	/* Set program counter to point to the first instruction */
 	vm->pc = md->text_start;
-	printf("vm->pc = "PRINT_FORMAT"\n", vm->pc);
+	DEBUG_VAR("", vm->pc, "\n\n", PRINT_FORMAT);
 
 	/* Set the running flag */
 	vm->is_running = true;
@@ -202,9 +202,12 @@ void VM_decode(RiscyVM* vm)
 	if (regB == 0)	{ vm->regs[regB] = 0; }
 	if (regC == 0)	{ vm->regs[regC] = 0; }
 
-//	printf("opcode = %d\n", opcode); printf("regA = %d\n", regA);
-//	printf("regB = %d\n", regB); printf("regC = %d\n", regC);
-//	printf("simm = %d\n", simm); printf("uimm = %d\n", uimm);
+	DEBUG_VAR("", opcode,	"\n", PRINT_FORMAT);
+	DEBUG_VAR("", regA,	"\n", PRINT_FORMAT);
+	DEBUG_VAR("", regB,	"\n", PRINT_FORMAT);
+	DEBUG_VAR("", regC,	"\n", PRINT_FORMAT);
+	DEBUG_VAR("", simm,	"\n", PRINT_FORMAT);
+	DEBUG_VAR("", uimm,	"\n", PRINT_FORMAT);
 
 	vm->current_instruction = (instruction_t) { opcode, regA, regB, regC,
 							simm, uimm };
@@ -283,10 +286,11 @@ static uint16_t load_to_array_from_file(uint16_t array[], FILE* file)
 		array[num_lines++] = (uint16_t) strtol(buffer, NULL, 16);
 	}
 
-	printf("Done loading input file. Printing loaded values:\n");
+	printf("done.\nPrinting loaded addresses and values:\n");
 	printf("-------------\n");
+	printf("    Address    Value\n");
 	for (int i = 0; i < num_lines; ++i) {
-		printf("%d:\t0x%04x", i, array[i]);
+		printf("    %6d:    0x%04x", i, array[i]);
 
 		printf("%s\n",	i == 0		  ? "  <-- Data header" :
 				i == array[0] + 1 ? "  <-- Text header" :

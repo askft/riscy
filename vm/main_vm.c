@@ -5,9 +5,7 @@
 
 #include "vm.h"
 
-/* TODO(Alexander)
- *
- */
+#define VERSION		"0.9.1"
 
 int main(int argc, char* argv[])
 {
@@ -28,6 +26,8 @@ int main(int argc, char* argv[])
 			exit(EXIT_FAILURE);
 		}
 	}
+
+	printf("~~~~~ RiscyVM ~~~~~\n~~~~~ v."VERSION" ~~~~~\n\n");
 
 	/* Start the virtual machine */
 	RiscyVM* vm = VM_init(progname);
