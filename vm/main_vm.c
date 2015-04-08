@@ -6,6 +6,11 @@
 #include "vm.h"
 
 #define VERSION		"0.9.1"
+#define WELCOME		"\n~~~~~ RiscyVM ~~~~~\n~~~~~ v."VERSION" ~~~~~\n\n"
+#define EXIT_MESSAGE	"Program exited successfully.\n"
+
+bool print_verbose_output;	/* Variables that are set */
+bool step_through_program;	/* from program arguments */
 
 int main(int argc, char* argv[])
 {
@@ -14,20 +19,24 @@ int main(int argc, char* argv[])
 		exit(EXIT_FAILURE);
 	}
 
-//	char*	thisname	= argv[0];	/* Name of this file */
-	char*	progname	= argv[1];	/* Name of input file */
-	bool	step		= false;
+	char* progname = argv[1];	/* Name of input file */
 
-	if (argv[2] != NULL) {
-		if (strcmp(argv[2], "--step") == 0) {
-			step = true;
-		} else {
-			printf("[!] Usage: ./vm <input_filename> [options]\n");
+	for (int i = 2; i < argc; ++i) {
+		if (!strcmp(argv[i], "--step"))
+			step_through_program = true;
+		else if (!strcmp(argv[i], "--verbose"))
+			print_verbose_output = true;
+		else {
+			printf("Error: Unknown option \"%s\". Available "
+				"options are:\n"
+				"    --step      Step through the program.\n"
+				"    --verbose   Print more information.\n",
+				argv[i]);
 			exit(EXIT_FAILURE);
 		}
 	}
 
-	printf("~~~~~ RiscyVM ~~~~~\n~~~~~ v."VERSION" ~~~~~\n\n");
+	printf(WELCOME);
 
 	/* Start the virtual machine */
 	RiscyVM* vm = VM_init(progname);
@@ -38,24 +47,25 @@ int main(int argc, char* argv[])
 		VM_decode(vm);
 		VM_execute(vm);
 
-		if (step) {
+		if (step_through_program) {
 			VM_print_regs(vm);
 			VM_print_data(vm);
 
-			printf("[ENTER]");
+			printf("[Press ENTER]");
 			getchar();
 			printf("\n");
 		}
 	}
 
-	if (!step) {
+	if (!step_through_program) {
 		VM_print_regs(vm);
 		VM_print_data(vm);
 	}
 
 	VM_shutdown(vm);
+	vm = NULL;
 
-	printf("Program exited successfully.\n");
+	printf(EXIT_MESSAGE);
 	return EXIT_SUCCESS;
 }
 

@@ -9,11 +9,9 @@
 
 /* Constants  */
 #define MEMORY_SIZE		(0xffff)	/* 2^16 - 1 */
-#define WORD_SIZE		(16)
+#define STACK_BOTTOM		(MEMORY_SIZE)
+#define WORD_SIZE		(16)		/* bits */
 #define NUM_REGISTERS		(8)
-
-// TODO(Alexander): Would this be better to use than the block below?
-//enum { ADD, ADDI, NAND, LUI, SW, LW, BEQ, JALR, }
 
 /* Instructions */
 #define ADD	(0x000)
@@ -32,6 +30,9 @@
 #define MASK_REG_C	(0x0007)	/* 0000 0000 0000 0111 */
 #define MASK_SIMM	(0x007f)	/* 0000 0000 0111 1111 */
 #define MASK_UIMM	(0x03ff)	/* 0000 0011 1111 1111 */
+
+/* If true, more information will be printed. Defined in vm_main.c. */
+extern bool print_verbose_output;
 
 /* Utility functions */
 static uint16_t	load_to_array_from_file	(uint16_t array[], FILE* file);
@@ -64,21 +65,20 @@ struct RiscyVM {
 	uint16_t	pc;			/* Program counter */
 
 	metadata_t	metadata;		/* Information about program */
-	instruction_t	current_instruction;
+	instruction_t	current_instruction;	/* Instruction executed during
+						   the current cycle */
 
 	bool		is_running;		/* PC != last instruction */
 };
 
 RiscyVM* VM_init(char filename[])
 {
-	/* Attempt to open [filename], the machine code file */
 	FILE* file = fopen(filename, "r");
 	if (file == NULL) {
 		ERROR("\t%s", OUT_OF_MEMORY);
 	}
 
-
-	RiscyVM* vm = malloc(sizeof(RiscyVM));
+	RiscyVM* vm = malloc(sizeof *vm);
 	if (vm == NULL) {
 		ERROR("\t%s", OUT_OF_MEMORY);
 	}
@@ -86,14 +86,16 @@ RiscyVM* VM_init(char filename[])
 	/* Initialize all registers to hold the value 0 */
 	memset(vm->regs, 0, sizeof vm->regs);
 
-	/* Set r7 to point to the top of the stack */
-	vm->regs[7] = MEMORY_SIZE;
+	/* Set r7 (stack pointer) to point to the top of the stack. */
+	vm->regs[7] = STACK_BOTTOM;
 	DEBUG_VAR("", vm->regs[7], "\t(Stack Pointer)\n", "0x%04x");
 
 	/* Load each line of the binary program into the VM's program array */
-	printf("Loading values from file \"%s\" ... ", filename);
+	if (print_verbose_output)
+		printf("Loading values from file \"%s\" ... ", filename);
 	int num_lines = load_to_array_from_file(vm->program, file);
-	printf("%d lines loaded from \"%s\".\n\n", num_lines, filename);
+	if (print_verbose_output)
+		printf("%d lines loaded from \"%s\".\n\n", num_lines, filename);
 
 	/* Close the file; we don't need it anymore */
 	rewind(file);
@@ -172,10 +174,8 @@ void VM_print_data(RiscyVM* vm)
 
 void VM_fetch(RiscyVM* vm)
 {
-	if (vm->pc >= vm->metadata.text_header + vm->metadata.text_size) {
-		printf("Executing last instruction. <-------------- [!]\n");
+	if (vm->pc >= vm->metadata.text_header + vm->metadata.text_size)
 		vm->is_running = false;
-	}
 
 	vm->pc += 1;
 }
@@ -191,8 +191,10 @@ void VM_decode(RiscyVM* vm)
 	uint16_t simm		= (instruction & MASK_SIMM);
 	uint16_t uimm		= (instruction & MASK_UIMM);
 
-	char binbuf[17];
-	printf("%s\n", dec_to_bin(binbuf, instruction, 16));
+	if (print_verbose_output) {
+		char binbuf[17];
+		printf("%s\n", dec_to_bin(binbuf, instruction, 16));
+	}
 
 	/* If the MSB of simm is 1, convert to the negative version */
 	sign_n_bits(&simm, 7);
@@ -224,54 +226,64 @@ void VM_execute(RiscyVM* vm)
 
 	switch (opcode) {
 	case ADD:
-		printf("add r%d, r%d, r%d\n", regA, regB, regC);
 		vm->regs[regA] = vm->regs[regB] + vm->regs[regC];
+		if (print_verbose_output)
+			printf("add r%d, r%d, r%d\n", regA, regB, regC);
 		break;
 
 	case ADDI:
-		printf("addi r%d, r%d, "PRINT_FORMAT"\n", regA, regB, simm);
 		vm->regs[regA] = vm->regs[regB] + simm;
+		if (print_verbose_output)
+			printf("addi r%d, r%d, "PRINT_FORMAT"\n",
+				regA, regB, simm);
 		break;
 
 	case NAND:
-		printf("nand r%d, r%d, r%d\n", regA, regB, regC);
 		vm->regs[regA] = ~(vm->regs[regB] & vm->regs[regC]);
+		if (print_verbose_output)
+			printf("nand r%d, r%d, r%d\n", regA, regB, regC);
 		break;
 
 	case LUI:
-		printf("lui r%d, "PRINT_FORMAT"\n", regA, uimm);
-		/* [uimm] is a 16 bit number with the 6 MSB's AND:ed to 0.
-		 * Shifting it left by 6 will result in bbbbbbbbbb000000. */
 		vm->regs[regA] = uimm << 6;
 
-		if ((vm->regs[regA] & 0x3f) != 0) {
+		if (print_verbose_output)
+			printf("lui r%d, "PRINT_FORMAT"\n", regA, uimm);
+
+		if ((vm->regs[regA] & 0x3f) != 0)
 			printf("%s: %s: LUI: Something went wrong!\n",
 					__FILE__, __func__);
-		}
 		break;
 
 	case SW:
-		printf("sw r%d, r%d, "PRINT_FORMAT"\n", regA, regB, simm);
 		vm->program[vm->regs[regB] + simm] = vm->regs[regA];
+		if (print_verbose_output)
+			printf("sw r%d, r%d, "PRINT_FORMAT"\n",
+				regA, regB, simm);
 		break;
 
 	case LW:
-		printf("lw r%d, r%d, "PRINT_FORMAT"\n", regA, regB, simm);
+		if (print_verbose_output)
+			printf("lw r%d, r%d, "PRINT_FORMAT"\n", regA, regB, simm);
 		vm->regs[regA] = vm->program[vm->regs[regB] + simm];
 		break;
 
 	case BEQ:
-		printf("beq r%d, r%d, "PRINT_FORMAT"\n", regA, regB, simm);
 		if (vm->regs[regA] == vm->regs[regB]) {
-			printf("<< Equal contents >>\n");
 			vm->pc += simm;
+			if (print_verbose_output)
+				printf("<< Equal contents >>\n");
 		}
+		if (print_verbose_output)
+			printf("beq r%d, r%d, "PRINT_FORMAT"\n", regA, regB, simm);
 		break;
 
 	case JALR:
-		printf("jalr r%d, r%d\n", regA, regB);
 		vm->regs[regA] = vm->pc;
 		vm->pc = vm->regs[regB];
+
+		if (print_verbose_output)
+			printf("jalr r%d, r%d\n", regA, regB);
 		break;
 	}
 }
@@ -286,17 +298,19 @@ static uint16_t load_to_array_from_file(uint16_t array[], FILE* file)
 		array[num_lines++] = (uint16_t) strtol(buffer, NULL, 16);
 	}
 
-	printf("done.\nPrinting loaded addresses and values:\n");
-	printf("-------------\n");
-	printf("    Address    Value\n");
-	for (int i = 0; i < num_lines; ++i) {
-		printf("    %6d:    0x%04x", i, array[i]);
+	if (print_verbose_output) {
+		printf("done.\nPrinting loaded addresses and values:\n");
+		printf("-------------\n");
+		printf("    Address    Value\n");
+		for (int i = 0; i < num_lines; ++i) {
+			printf("    %6d:    0x%04x", i, array[i]);
 
-		printf("%s\n",	i == 0		  ? "  <-- Data header" :
-				i == array[0] + 1 ? "  <-- Text header" :
-				"");
+			printf("%s\n",	i == 0		  ? "  <-- Data header":
+					i == array[0] + 1 ? "  <-- Text header":
+					"");
+		}
+		printf("-------------\n");
 	}
-	printf("-------------\n");
 
 	return num_lines;
 }
@@ -314,9 +328,9 @@ static char* dec_to_bin(char* bin, int dec, int nbr_bits)
 static void sign_n_bits(uint16_t* s, unsigned int n)
 {
 	if (*s > pow(2, n - 1) - 1) {
-		printf("simm: 0x%04x -> ", *s);
+		DEBUG_PRINT("simm: 0x%04x -> ", *s);
 		*s -= pow(2, n);
-		printf("0x%04x\n", *s);
+		DEBUG_PRINT("0x%04x\n", *s);
 	}
 }
 

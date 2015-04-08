@@ -6,7 +6,7 @@
 /*
  * If DEBUG != 0, activate debug mode (i.e. print more stuff)
  */
-#define DEBUG	0
+#define DEBUG	1
 
 
 
