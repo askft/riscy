@@ -1,5 +1,5 @@
 CC	= gcc
-CFLAGS	= -g -Wall -Wextra -pedantic -std=c99
+CFLAGS	= -g -Wall -Wextra -pedantic -std=c99 -O3
 LIBS	= -lm
 
 ASM_SRC	= RiscyAssembler/*.c
