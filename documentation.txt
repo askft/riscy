@@ -2,20 +2,30 @@
 IMPORTANT NOTES
 --------------------------------------------------------------------------------
 
-Some notes:
+None for now, except that this file needs to be updated. Don't trust everything
+here. :)
 
-	- The data must come first in the program
-	- After the data comes the text segment i.e. the instructions
-	- The first line of the resulting binary file tells the interpreter on
-	  which line the instruction header lies.
-	- The instruction header contains the line number that comes after
-	  the last instruction
+--------------------------------------------------------------------------------
+	Program layout
+--------------------------------------------------------------------------------
 
-	- The registers can hold 16-bit integers. Internally they are stored as
-	  unsigned integers (uint16_t from stdint.h) but can be printed as
-	  hexadecimal, signed or unsigned integers.
+When a program is assembled, the resulting file is laid out as follows:
 
-I'll expand this file eventually.
+[data header]   <- Contains number of lines of data (in this case 3).
+[some data]
+[some data]
+[some data]
+[text header]   <- Contains number of lines of text (in this case 7).
+[some text]
+[some text]
+[some text]
+[some text]
+[some text]
+[some text]
+[some text]
+
+Each line of data or text is represented by a four-digit hexadecimal number
+(e.g. 0x03fc).
 
 
 
@@ -52,6 +62,10 @@ with a an address, i.e. an integer that is stored on the heap.
 --------------------------------------------------------------------------------
 	Registers
 --------------------------------------------------------------------------------
+
+The registers can hold 16-bit integers. Internally they are stored as unsigned
+integers (uint16_t from stdint.h) but can be printed as hexadecimal, signed or
+unsigned integers.
 
 There are eigth registers, r0 to r7. To make things work, there are some
 conventions that shall always be followed when implementing the VM for this ISA.
