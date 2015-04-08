@@ -75,7 +75,7 @@ RiscyVM* VM_init(char filename[])
 {
 	FILE* file = fopen(filename, "r");
 	if (file == NULL) {
-		ERROR("\t%s", OUT_OF_MEMORY);
+		ERROR("\tCould not open file \"%s\".\n", filename);
 	}
 
 	RiscyVM* vm = malloc(sizeof *vm);

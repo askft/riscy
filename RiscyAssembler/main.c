@@ -91,6 +91,8 @@ int main(int argc, char* argv[])
 	printf("End   : assemble_text.\n\n");
 
 	/* Done with the assembly. Close all files and free all memory. */
+	remove(tmp_filename1);
+	remove(tmp_filename2);
 	fclose(input);
 	fclose(tmpfile1);
 	fclose(tmpfile2);
