@@ -74,6 +74,41 @@ What the virtual machine can do is read the "machine code" produced by the
 assembler, interpret it, and print registers and memory contents.
 
 
+### Usage
+
+Clone or pull the repository, enter the directory and type "make". It will
+create two new files, "asm" and "vm". To compile a source file, use the command
+`./asm <input> <output>` where <input> is the source file and <output> will be
+the binary. There are some examples in the *test* folder.
+
+To run the binary, simply type `./vm <file> [options]` where <file> is the
+binary and [options] can be one or more of the following:
+ * **--step** – Step through the program instruction by instruction.
+ * **--verbose** – Print some more information, namely which instructions were
+loaded and executed.
+
+And example usage would look like the following:
+
+```
+git clone http://github.com/AlexanderSkafte/riscy.git
+cd riscy
+make
+./asm test/sum.s sum
+./vm sum --step --verbose
+```
+
+This will compute the sum of all number from 1 to 10, where each term is
+multiplied by two. The result will be stored in and printed as Data[0].
+
+Additional debug printouts can be enabled in the file "vm/macros.h", by changing
+the `DEBUG` define from 0 to a non-zero value.
+
+As for *writing* riscy assembly programs, I will provide a documentation soon.
+Full information can be found on the website linked to in the first section of
+the README, but keep in mind that my program does not provide a complete
+implementation of the RiSC-16 architecture.
+
+
 ### Motivation
 
 Before starting this project, I had no idea whatsoever how to implement an
