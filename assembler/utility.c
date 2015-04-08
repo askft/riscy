@@ -8,6 +8,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+const char* instructions[NBR_INSTRUCTIONS] = {
+	"add", "addi", "nand", "lui", "sw", "lw", "beq", "jalr",
+};
+
 FILE* safer_fopen(char* filename, char* action)
 {
 	FILE* tmp = fopen(filename, action);
@@ -23,6 +27,15 @@ FILE* safer_fopen(char* filename, char* action)
 	return tmp;
 }
 
+uint16_t get_reg_num(const char* reg)
+{
+	if (strlen(reg) != 2) {
+		printf("[!] Compile error: Invalid token [%s].\n", reg);
+		exit(EXIT_FAILURE);
+	}
+	return reg[1] - '0';
+}
+
 char* dec_to_bin(char* bin, int dec, int nbr_bits)
 {
 	int i;
@@ -36,25 +49,14 @@ char* dec_to_bin(char* bin, int dec, int nbr_bits)
 uint16_t str_to_int(const char* str)
 {
 	uint16_t ret;
+
 	if (str[0] == '0' && str[1] == 'b') {
-//		if (!is_binary(str)) {
-//			printf("[!] Invalid token \"%s\".\n", str);
-//			exit(EXIT_FAILURE);
-//		}
 		ret = strtol((str + 2), NULL, 2);
 
 	} else if (str[0] == '0' && str[1] == 'x') {
-//		if (!is_hex(str)) {
-//			printf("[!] Invalid token \"%s\".\n", str);
-//			exit(EXIT_FAILURE);
-//		}
 		ret = strtol(str, NULL, 16);
 
 	} else {
-//		if (!is_dec(str)) {
-//			printf("[!] Invalid token \"%s\".\n", str);
-//			exit(EXIT_FAILURE);
-//		}
 		ret = strtol(str, NULL, 10);
 	}
 
@@ -90,9 +92,13 @@ char strlast(const char* str)
 	return str[strlen(str) - 1];
 }
 
+bool streq(const char* s1, const char* s2)
+{
+	return strcmp(s1, s2) == 0;
+}
+
 bool is_dec(const char* str)
 {
-//	printf("Checking if \"%s\" is decimal ... ", str);
 	bool has_sign = str[0] == '-' || str[0] == '+';
 	if (has_sign && strlen(str) == 1) {
 		return false;
@@ -102,7 +108,6 @@ bool is_dec(const char* str)
 			return false;
 		}
 	}
-//	printf("true!\n");
 	return true;
 }
 
@@ -112,7 +117,6 @@ bool is_binary(const char* str)
 		return false;
 	}
 	if (!(str[0] == '0' && str[1] == 'b')) {
-//		printf("\"%s\" was not prepended by \"0b\".\n", str);
 		return false;
 	}
 	for (unsigned long i = 2; i < strlen(str); ++i) {
@@ -129,7 +133,6 @@ bool is_hex(const char* str)
 		return false;
 	}
 	if (!(str[0] == '0' && str[1] == 'x')) {
-//		printf("\"%s\" was not prepended by \"0x\".\n", str);
 		return false;
 	}
 	for (unsigned long i = 2; i < strlen(str); ++i) {
@@ -191,10 +194,5 @@ bool is_register(const char* str)
 		&& '0' <= str[1]
 		&& str[1] <= '7'
 		&& strlen(str) == 2;
-}
-
-bool streq(const char* s1, const char* s2)
-{
-	return strcmp(s1, s2) == 0;
 }
 

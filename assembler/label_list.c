@@ -6,8 +6,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-const char* instructions[NBR_INSTRUCTIONS] = {
-	"add", "addi", "nand", "lui", "sw", "lw", "beq", "jalr",
+#define MAX_LABELS		(MEM_SIZE)
+#define MAX_LABEL_LENGTH	(80)
+
+typedef struct label_t label_t;
+
+struct label_list_t {
+	uint16_t	nbr_labels;
+	label_t*	labels[MAX_LABELS];
+};
+
+struct label_t {
+	char		name[MAX_LABEL_LENGTH + 1];
+	uint16_t	address;
 };
 
 label_list_t* label_list_init()
@@ -107,30 +118,4 @@ void label_list_free(label_list_t* list)
 		free(list);
 	}
 }
-
-uint16_t get_reg_num(const char* reg)
-{
-	if (strlen(reg) != 2) {
-		printf("[!] Compile error: Invalid token [%s].\n", reg);
-		exit(EXIT_FAILURE);
-	}
-	return reg[1] - '0';
-}
-
-#if 0
-char* get_reg_bin(const char* name)
-{
-	if (streq(name, "r0"))	return "000";
-	if (streq(name, "r1"))	return "001";
-	if (streq(name, "r2"))	return "010";
-	if (streq(name, "r3"))	return "011";
-	if (streq(name, "r4"))	return "100";
-	if (streq(name, "r5"))	return "101";
-	if (streq(name, "r6"))	return "110";
-	if (streq(name, "r7"))	return "111";
-
-	fprintf(stderr, "[!] Invalid register name: %s\n", name);
-	return NULL;
-}
-#endif
 
