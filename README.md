@@ -1,14 +1,16 @@
 # The Riscy Assembler and Virtual Machine
 
-This is a simple implementation of an assembler and a VM for the
-[RiSC-16](http://www.eng.umd.edu/~blj/RiSC/) (Ridiculously Simple Computer) 
-instruction set.
+This repository consists of two programs: an assembler and a VM, both for the
+Riscy ISA (Instruction Set Architecture). Riscy is heavily inspired by the
+[RiSC-16](http://www.eng.umd.edu/~blj/RiSC/) (Ridiculously Simple Computer) and
+also to some extent the MIPS computer.
 
-So far, only the most basic functionality of RiSC-16 has been implemented. 
+### The assembler
 
-The assembler currently handles labels, one directive (.fill), eight registers,
- and eight instructions:
+The assembler currently handles labels, one directive type (.fill), eight
+registers, and eight assembly language instructions:
 
+```
 | Mnemonic | Long name                    |
 |----------|------------------------------|
 | add      | add                          |
@@ -19,9 +21,7 @@ The assembler currently handles labels, one directive (.fill), eight registers,
 | lw       | load word                    |
 | beq      | branch if equal              |
 | jalr     | jump and link register       |
-
-
-### The assembler
+```
 
 The assembler can assemble code such as this:
 
@@ -64,14 +64,13 @@ into "machine code" such as this:
 ```
 
 
-### The interpreter / virtual machine
+### The virtual machine
 
 First of all, the virtual machine is *very* simplistic; it is not hardware
-descriptive, i.e. not a simulation of an actual RiSC-16 processor. The source
-code can be found in [the vm directory](RiscyVM) in this repository.
+descriptive, i.e. not a simulation of an actual processor. 
 
 What the virtual machine can do is read the "machine code" produced by the
-assembler, interpret it, and print registers and memory contents.
+assembler, run it, and print registers and memory contents to `stdout`.
 
 
 ### Usage
@@ -79,10 +78,11 @@ assembler, interpret it, and print registers and memory contents.
 Clone or pull the repository, enter the directory and type "make". It will
 create two new files, "asm" and "vm". To compile a source file, use the command
 `./asm <input> <output>` where <input> is the source file and <output> will be
-the binary. There are some examples in the *test* folder.
+the binary. Please note that the source files must end with a `.s` extension.
+There are some examples in the *examples* folder.
 
-To run the binary, simply type `./vm <file> [options]` where <file> is the
-binary and [options] can be one or more of the following:
+To run the compiled source file, simply type `./vm <file> [options]` where
+<file> is the binary and [options] can be one or more of the following:
  * **--step** – Step through the program instruction by instruction.
  * **--verbose** – Print some more information, namely which instructions were
 loaded and executed.
@@ -106,12 +106,13 @@ the `DEBUG` define from 0 to a non-zero value.
 As for *writing* riscy assembly programs, I will provide a documentation soon.
 Full information can be found on the website linked to in the first section of
 the README, but keep in mind that my program does not provide a complete
-implementation of the RiSC-16 architecture.
+implementation of the RiSC-16 architecture. For examples, I have not yet
+implemented the pseudoinstructions.
 
 
 ### Motivation
 
 Before starting this project, I had no idea whatsoever how to implement an
 assembler nor a virtual machine. I'm not saying my implementations are idiomatic
-or optimal; this has been nothing more than a learning project.
+or optimal though; this has been (and is) nothing more than a learning project.
 
