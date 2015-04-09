@@ -68,7 +68,7 @@ into "machine code" such as this:
 
 First of all, the virtual machine is *very* simplistic; it is not hardware
 descriptive, i.e. not a simulation of an actual RiSC-16 processor. The source
-code can be found in [the vm directory](vm) in this repository.
+code can be found in [the vm directory](RiscyVM) in this repository.
 
 What the virtual machine can do is read the "machine code" produced by the
 assembler, interpret it, and print registers and memory contents.
