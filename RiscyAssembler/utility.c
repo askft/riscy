@@ -4,6 +4,7 @@
 #include "label_list.h"
 
 #include <ctype.h>
+#include <errno.h>
 #include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,12 +17,14 @@ FILE* safer_fopen(char* filename, char* action)
 {
 	FILE* tmp = fopen(filename, action);
 	if (tmp == NULL) {
-		if (strcmp(action, "r") == 0)
-			printf("[!] Failed to open file %s for reading.\n",
-					filename);
-		if (strcmp(action, "w") == 0)
-			printf("[!] Failed to open file %s for writing.\n",
-					filename);
+		if (strcmp(action, "r") == 0) {
+			fprintf(stderr, "Failed to open %s for reading (%s)\n",
+					filename, strerror(errno));
+		}
+		if (strcmp(action, "w") == 0) {
+			fprintf(stderr, "Failed to open %s for writing (%s)\n",
+					filename, strerror(errno));
+		}
 		exit(EXIT_FAILURE);
 	}
 	return tmp;

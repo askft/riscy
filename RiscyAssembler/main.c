@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /* TODO(Alexander)
  * 	Search for all TODOs in assembler.c.
@@ -30,6 +31,18 @@ int main(int argc, char* argv[])
 
 	if (argc != 3) {
 		printf("Usage: assembler <input_filename> <output_filename>\n");
+		exit(EXIT_FAILURE);
+	}
+
+	/* File must end with ".s" */
+	char* ext = strrchr(input_filename, '.');
+	if (ext == '\0') {
+		fprintf(stderr, "Invalid filename \"%s\"; file must end with a "
+				".s extension.\n", input_filename);
+		exit(EXIT_FAILURE);
+	} else if (!streq(".s", ext)) {
+		fprintf(stderr, "Invalid extension \"%s\"; file must end with a"
+				" .s extension.\n", ext);
 		exit(EXIT_FAILURE);
 	}
 

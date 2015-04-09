@@ -19,3 +19,5 @@ vm: $(VM_SRC)
 clean:
 	rm -f $(ASM_OUT) $(VM_OUT)
 	rm -Rf $(ASM_OUT).dSYM $(VM_OUT).dSYM
+	rm -f fbf7c968
+	rm -f 62fe98d2
