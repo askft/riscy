@@ -2,18 +2,18 @@ CC	= gcc
 CFLAGS	= -g -Wall -Wextra -pedantic -std=c99 -O3
 LIBS	= -lm
 
-ASM_SRC	= RiscyAssembler/*.c
-ASM_OUT	= asm
+ASM_SRC	= Assembler/*.c
+ASM_OUT	= assemble
 
-VM_SRC	= RiscyVM/*.c
-VM_OUT	= vm
+VM_SRC	= VM/*.c
+VM_OUT	= run
 
-default: asm vm
+default: a v
 
-asm: $(ASM_SRC)
+a: $(ASM_SRC)
 	$(CC) $(CFLAGS) $(ASM_SRC) -o $(ASM_OUT)
 
-vm: $(VM_SRC)
+v: $(VM_SRC)
 	$(CC) $(CFLAGS) $(VM_SRC) -o $(VM_OUT) $(LIBS)
 
 clean:
