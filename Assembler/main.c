@@ -22,12 +22,12 @@ int main(int argc, char* argv[])
 	FILE*	tmpfile1	= NULL;
 	FILE*	tmpfile2	= NULL;
 
-	label_list_t*	list;		/* Will be assigned to the return value
+	symtable_t*	symtable;		/* Will be assigned to the return value
 					   of the parsed_labels function, to
 					   later be passed as a parameter into
 					   the replace_labels function.
 					   [!!!] This has to be freed by calling
-					   label_list_free. */
+					   symtable_free. */
 
 	if (argc != 3) {
 		printf("Usage: assembler <input_filename> <output_filename>\n");
@@ -69,9 +69,9 @@ int main(int argc, char* argv[])
 	printf("End   : check_register\n");
 
 	/* Scan for labels and store their respective addresses */
-	list = label_list_init();
+	symtable = symtable_init();
 	printf("Start : parse_labels\n");
-	parse_labels(tmpfile1, list);
+	parse_labels(tmpfile1, symtable);
 	printf("End   : parse_labels\n\n");
 
 	/* Tedious to read from and write to the first temporary file at the
@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
 
 	/* Replace all labels with their binary addressed */
 	printf("Start : replace_labels\n");
-	replace_labels(tmpfile2, tmpfile1, list);
+	replace_labels(tmpfile2, tmpfile1, symtable);
 	printf("End   : replace_labels\n\n");
 
 	/* Reopen tmpfile2 for reading, and open the user output file for
@@ -111,7 +111,7 @@ int main(int argc, char* argv[])
 	fclose(tmpfile2);
 	fclose(output);
 
-	label_list_free(list);
+	symtable_free(symtable);
 
 	printf( "\n========================================================\n"
 		"Exiting assembler.\n"

@@ -1,7 +1,7 @@
 /* utility.c */
 
 #include "utility.h"
-#include "label_list.h"
+#include "symtable.h"
 
 #include <ctype.h>
 #include <errno.h>

@@ -1,7 +1,7 @@
 /* assembler.c */
 
 #include "assembler.h"
-#include "label_list.h"
+#include "symtable.h"
 #include "utility.h"
 
 #include <ctype.h>
@@ -24,7 +24,7 @@ static int	tokenize	(char**		tokens,
 				 const char*	src,
 				 const char*	delimiters);
 
-/* Assembles [src], a line with instructions, and stores the result in [dest] */
+/* Assembles `src`, a line with instructions, and stores the result in `dest` */
 static void	assemble_line	(uint16_t*	dest,
 				 uint16_t*	line_num,
 				 const char*	src);
@@ -32,7 +32,7 @@ static void	assemble_line	(uint16_t*	dest,
 
 /* File Cleanup 
  * 	Remove comments and trailing whitespace.
- * 	Store the result in a new file [output].
+ * 	Store the result in a new file `output`.
  */
 void file_cleanup(FILE* output, FILE* input)
 {
@@ -75,10 +75,10 @@ void check_registers(FILE* input)
 }
 
 /* Parse Labels
- * 		If a label such as "example:" is found in [input], store the
- * 		address (which ranges from 0 to 2^16 - 1) inside [list].
+ * 		If a label such as "example:" is found in `input`, store the
+ * 		address (which ranges from 0 to 2^16 - 1) inside `symtable`.
  */
-void parse_labels(FILE* input, label_list_t* list)
+void parse_labels(FILE* input, symtable_t* symtable)
 {
 	char		buffer[MAX_LINE_LENGTH];
 	char*		token;
@@ -123,10 +123,10 @@ void parse_labels(FILE* input, label_list_t* list)
 			 */
 			/* TODO(Alexander): or .space */
 			if (streq(next_token, ".fill")) {
-				label_list_add(list, token, address + 1);
+				symtable_add(symtable, token, address + 1);
 
 			} else if (is_instruction(next_token)) {
-				label_list_add(list, token, address + 2);
+				symtable_add(symtable, token, address + 2);
 
 			} else {
 				printf("[!] Compile error (line %u): Unknown "
@@ -138,7 +138,7 @@ void parse_labels(FILE* input, label_list_t* list)
 		address += 1;
 
 	}
-	label_list_print(list);
+	symtable_print(symtable);
 	rewind(input);		/* A real programmer doesn't litter. */
 }
 
@@ -146,7 +146,7 @@ void parse_labels(FILE* input, label_list_t* list)
  * with a ':', and also replaces the lables given as arguments to instructions
  * with their binary representations, i.e. their real addresses.
  */
-void replace_labels(FILE* output, FILE* input, label_list_t* list)
+void replace_labels(FILE* output, FILE* input, symtable_t* symtable)
 {
 	char		buffer_in[MAX_LINE_LENGTH];
 	char		buffer_out[MAX_LINE_LENGTH];
@@ -155,7 +155,7 @@ void replace_labels(FILE* output, FILE* input, label_list_t* list)
 	char		delimiters[]	= "\n\t ,";
 	uint16_t	address		= 0;
 
-	if (output == NULL || input == NULL || list == NULL) {
+	if (output == NULL || input == NULL || symtable == NULL) {
 		fprintf(stderr, "%s:%s: [!] Error: NULL parameter.\n",
 				__FILE__, __func__);
 		exit(EXIT_FAILURE);
@@ -195,9 +195,9 @@ void replace_labels(FILE* output, FILE* input, label_list_t* list)
 				printf("beq arg 3 = %s\n", token);
 
 				/* If label, calculate offset with address */
-				if (label_list_contains(list, token)) {
+				if (symtable_contains(symtable, token)) {
 					uint16_t n =
-					label_list_get_address(list, token)
+					symtable_get_address(symtable, token)
 					- address + 2;
 
 					sprintf(buffer_str, "0x%04x", n);
@@ -219,9 +219,9 @@ void replace_labels(FILE* output, FILE* input, label_list_t* list)
 
 			char format[] = "0x%04x ";
 
-			if (label_list_contains(list, token)) {
+			if (symtable_contains(symtable, token)) {
 				sprintf(buffer_str, format,
-					label_list_get_address(list, token));
+					symtable_get_address(symtable, token));
 				printf("&%s = %s\n", token, buffer_str);
 
 			} else if (is_directive(token)	|| is_register(token) ||

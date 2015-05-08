@@ -1,7 +1,7 @@
 #ifndef ASSEMBLER_H
 #define ASSEMBLER_H
 
-#include "label_list.h"
+#include "symtable.h"
 
 #include <stdio.h>
 
@@ -22,12 +22,12 @@ void	file_cleanup	(FILE* output, FILE* input);
  * more digits. */
 void	check_registers	(FILE* input);
 
-/* Search for labels in "input" and stores them in "list" */
-void	parse_labels	(FILE* input, label_list_t* list);
+/* Search for labels in `input` and stores them in `symtable` */
+void	parse_labels	(FILE* input, symtable_t* symtable);
 
 /* Puts the binary representations of the labels in [output], as a replacement
  * of the symbolic labels in [input]. */
-void	replace_labels	(FILE* output, FILE* input, label_list_t* list);
+void	replace_labels	(FILE* output, FILE* input, symtable_t* symtable);
 
 /* Converts a "clean" file with assembly instructions to ones and zeros */
 void	assemble_data	(FILE* output, FILE* input);

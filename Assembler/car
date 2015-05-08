@@ -1,0 +1,23 @@
+clear && clear && \
+gcc -g main.c assembler.c label_list.c utility.c \
+	-Wall -Wextra -pedantic -std=c11 \
+	-o b9ea6d99 && \
+\
+./b9ea6d99 ../test/sum.s ../test/sum && \
+\
+echo "------------------------ Start [input]:" && \
+cat ../test/sum.s && \
+echo "------------------------ End [input]" && \
+echo "" && \
+echo "------------------------ Start temporary file 1:" && \
+cat fbf7c968 && \
+echo "------------------------ End temporary file 1" && \
+echo "" && \
+echo "------------------------ Start temporary file 2" && \
+cat 62fe98d2 && \
+echo "------------------------ End temporary file 2" && \
+echo "" && \
+echo "------------------------ Start [output]:" && \
+cat ../test/sum && \
+echo "------------------------ End [output]" && \
+rm -R b9ea6d99 b9ea6d99.dSYM fbf7c968 62fe98d2
