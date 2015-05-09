@@ -1,7 +1,6 @@
 /* assembler.c */
 
 #include "assembler.h"
-#include "symtable.h"
 #include "utility.h"
 
 #include <ctype.h>
@@ -12,7 +11,6 @@
 #include <string.h>
 
 #define MAX_LINE_LENGTH	(1024)
-#define MAX		(1024)
 #define WORD_SIZE	(16)
 
 #define MASK_LOW_7	(0x7f)		/* 0000 0000 0111 1111 */
@@ -521,7 +519,7 @@ static void assemble_line(uint16_t* dest, uint16_t* line_num, const char* src)
 
 int tokenize(char** tokens, const char* src, const char* delimiters)
 {
-	char	src_copy[MAX];
+	char	src_copy[MAX_LINE_LENGTH];
 	char*	token;
 	int	num_tokens;
 
