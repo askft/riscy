@@ -35,7 +35,15 @@ void symtable_add (symtable_t* symtable, char* name, uint16_t address);
  * 	Searches for a symbol string in the symbol table, and returns its
  * 	corresponding address if it was found. If the symbol was not present in
  * 	the table, exits the program.
- * 	TODO(Alexander): Is that really a good idea...?
+ *
+ * 	[!] Exiting the program if the symbol was not found might not be what
+ * 	    you want. You may use this function in the following way:
+ *
+ * 		uint16_t address;
+ * 		if (symtable_contains(symtable, "example_label")) {
+ * 			address = symtable_get_address(symtable, "some_label");
+ * 		}
+ *
  * 	@param `symtable`	A pointer the the symbol table under operation.
  * 	@param `name`		The symbol to search for.
  */
