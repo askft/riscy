@@ -3,7 +3,7 @@ CFLAGS	= -g -Wall -Wextra -pedantic -std=c99 -O3
 LIBS	= -lm
 
 ASM_SRC	= Assembler/*.c
-ASM_OUT	= assemble
+ASM_OUT	= asm
 
 VM_SRC	= VM/*.c
 VM_OUT	= run
