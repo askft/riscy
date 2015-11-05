@@ -100,7 +100,7 @@ make
 This will compute the sum of all number from 1 to 10, where each term is
 multiplied by two. The result will be stored in and printed as Data[0].
 
-Additional debug printouts can be enabled in the file "run/macros.h", by
+Additional debug printouts can be enabled in the file "VM/macros.h", by
 changing the `DEBUG` define from 0 to a non-zero value.
 
 As for *writing* Riscy assembly programs, I will provide a documentation soon.
