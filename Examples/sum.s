@@ -15,3 +15,4 @@ loop:	add	r4, r1, r1		# term = counter * 2
 	beq	r0, r0, loop		# Unconditional branch to loop
 
 end:	sw	r3, r0, result		# Store sum in result
+

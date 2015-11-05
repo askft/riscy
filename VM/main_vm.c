@@ -15,7 +15,7 @@ bool step_through_program;	/* from program arguments */
 int main(int argc, char* argv[])
 {
 	if (argc < 2) {
-		printf("Usage: cpu <input_filename>\n");
+		printf("Usage: run <input_filename>\n");
 		exit(EXIT_FAILURE);
 	}
 

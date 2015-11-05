@@ -76,12 +76,12 @@ assembler, run it, and print registers and memory contents to `stdout`.
 ### Usage
 
 Clone or pull the repository, enter the directory and type "make". It will
-create two new files, "asm" and "vm". To compile a source file, use the command
+create two new files, "asm" and "run". To compile a source file, use the command
 `./asm <input> <output>` where <input> is the source file and <output> will be
 the binary. Please note that the source files must end with a `.s` extension.
-There are some examples in the *examples* folder.
+There are some examples in the *Examples* folder.
 
-To run the compiled source file, simply type `./vm <file> [options]` where
+To run the compiled source file, simply type `./run <file> [options]` where
 <file> is the binary and [options] can be one or more of the following:
  * **--step** – Step through the program instruction by instruction.
  * **--verbose** – Print some more information, namely which instructions were
@@ -93,20 +93,20 @@ And example usage would look like the following:
 git clone http://github.com/AlexanderSkafte/riscy.git
 cd riscy
 make
-./asm test/sum.s sum
-./vm sum --step --verbose
+./asm Examples/sum.s sum
+./run sum --step --verbose
 ```
 
 This will compute the sum of all number from 1 to 10, where each term is
 multiplied by two. The result will be stored in and printed as Data[0].
 
-Additional debug printouts can be enabled in the file "vm/macros.h", by changing
-the `DEBUG` define from 0 to a non-zero value.
+Additional debug printouts can be enabled in the file "run/macros.h", by
+changing the `DEBUG` define from 0 to a non-zero value.
 
-As for *writing* riscy assembly programs, I will provide a documentation soon.
+As for *writing* Riscy assembly programs, I will provide a documentation soon.
 Full information can be found on the website linked to in the first section of
 the README, but keep in mind that my program does not provide a complete
-implementation of the RiSC-16 architecture. For examples, I have not yet
+implementation of the RiSC-16 architecture. For instance, I have not yet
 implemented the pseudoinstructions.
 
 

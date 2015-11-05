@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 	FILE*	tmpfile1	= NULL;
 	FILE*	tmpfile2	= NULL;
 
-	symtable_t*	symtable;		/* Will be assigned to the return value
+	symtable_t*	symtable;	/* Will be assigned to the return value
 					   of the parsed_labels function, to
 					   later be passed as a parameter into
 					   the replace_labels function.
