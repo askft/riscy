@@ -185,8 +185,8 @@ void VM_decode(RiscyVM* vm)
 	uint16_t instruction	= vm->program[vm->pc - 1];
 
 	uint16_t opcode		= (instruction & MASK_OPCODE) >> (16 - 3);
-	uint16_t regA		= (instruction & MASK_REG_A) >> (16 - 6);
-	uint16_t regB		= (instruction & MASK_REG_B) >> (16 - 9);
+	uint16_t regA		= (instruction & MASK_REG_A)  >> (16 - 6);
+	uint16_t regB		= (instruction & MASK_REG_B)  >> (16 - 9);
 	uint16_t regC		= (instruction & MASK_REG_C);
 	uint16_t simm		= (instruction & MASK_SIMM);
 	uint16_t uimm		= (instruction & MASK_UIMM);
